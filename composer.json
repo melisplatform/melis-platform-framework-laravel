@@ -1,0 +1,9 @@
+{
+    "name": "melisplatform/melis-platform-framework-laravel",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "MelisPlatformFrameworkLaravel\\": "src/"
+        }
+    }
+}
