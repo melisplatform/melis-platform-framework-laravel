@@ -14,10 +14,6 @@
     "zf2",
     "module"
   ],
-  "extra": {
-    "module-name": "MelisPlatformFrameworkLaravel",
-    "dbdeploy": true
-  },
   "require": {
     "php": "^5.5 || ^7.0",
     "ext-openssl": "*",
