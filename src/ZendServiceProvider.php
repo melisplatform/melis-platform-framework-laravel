@@ -36,23 +36,36 @@ class ZendServiceProvider extends ServiceProvider
         $this->syncDatabaseConnection();
     }
 
+    /**
+     * Executing Zend application to retrieving
+     * Service and Event managers
+     */
     public function zendApplication()
     {
         // Avoid accessing from artisan command
         $zendApp = $_SERVER['DOCUMENT_ROOT'].'/../config/application.config.php';
         if (file_exists($zendApp)){
+            //Executing Zend application
             $zendApplication = \Zend\Mvc\Application::init(require $zendApp);
 
+            // Zend Service Manager
             $this->zendServiceManager = $zendApplication->getServiceManager();
+            // Zend Event Manager
             $this->zendEventManager = $zendApplication->getEventManager();
         }
     }
 
+    /**
+     * This method set the Database connection
+     * using Zend configuration and
+     * connection
+     */
     public function syncDatabaseConnection()
     {
         if (!$this->zendServiceManager)
             return;
 
+        // Retrieving Zend application database connection from config
         $config = $this->zendServiceManager->get('config');
 
         if (!empty($config['db'])){
@@ -65,12 +78,18 @@ class ZendServiceProvider extends ServiceProvider
             $username = $config['db']['username'];
             $password = $config['db']['password'];
 
+            /**
+             * Assign database configuration data collected to
+             * laravel application using global Config helper
+             */
             config([
-                'database.connections.mysql.driver' => $driver,
-                'database.connections.mysql.host' => $host,
-                'database.connections.mysql.database' => $database,
-                'database.connections.mysql.username' => $username,
-                'database.connections.mysql.password' => $password,
+                'database.connections.mysql' => [
+                    'driver' => $driver,
+                    'host' => $host,
+                    'database' => $database,
+                    'username' => $username,
+                    'password' => $password,
+                ]
             ]);
         }
     }

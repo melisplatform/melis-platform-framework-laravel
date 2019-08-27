@@ -15,14 +15,7 @@
     "module"
   ],
   "require": {
-    "php": "^5.5 || ^7.0",
-    "ext-openssl": "*",
-    "ext-json": "*",
-    "ext-pdo_mysql": "*",
-    "melisplatform/melis-core": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "~4.8"
+    "melisplatform/melis-core": "^3.0"
   },
   "autoload": {
     "psr-4": {
