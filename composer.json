@@ -40,12 +40,12 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\": "/../../../thirdparty/laravel/app",
+      "App\\": "../../../thirdparty/laravel/app",
       "MelisPlatformFrameworkLaravel\\": "src/"
     },
     "classmap": [
-      "/../../../thirdparty/database/seeds",
-      "/../../../thirdparty/database/factories"
+      "../../../thirdparty/database/seeds",
+      "../../../thirdparty/database/factories"
     ]
   }
 }
