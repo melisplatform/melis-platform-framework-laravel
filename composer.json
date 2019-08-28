@@ -44,8 +44,8 @@
       "MelisPlatformFrameworkLaravel\\": "src/"
     },
     "classmap": [
-      "../../../thirdparty/database/seeds",
-      "../../../thirdparty/database/factories"
+      "../../../thirdparty/laravel/database/seeds",
+      "../../../thirdparty/laravel/database/factories"
     ]
   }
 }
