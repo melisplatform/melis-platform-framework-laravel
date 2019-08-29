@@ -14,9 +14,6 @@
     "zf2",
     "module"
   ],
-  "require": {
-    "melisplatform/melis-core": "^3.0"
-  },
   "autoload": {
     "psr-4": {
       "MelisPlatformFrameworkLaravel\\": "src/"
