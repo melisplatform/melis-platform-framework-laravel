@@ -1,12 +1,12 @@
 # melis-platform-framework-laravel
 
-This laravel service provides the a connection to the Zend application to enable 
-accessing the Service and Event Manager and Database connection configuration of the 
-application
+This laravel service provides a connection to the Zend application enabling 
+access to the Service and Event Manager and Database connection configuration of the 
+application.
 
 ### Prerequisites
-This module required melisplatform/melis-core in order to have this module running.
-This will automatically be done when using composer.
+This module requires melisplatform/melis-core.
+It will automatically be done when using composer.
 
 ### Installing
 ```
@@ -21,7 +21,7 @@ MelisPlatformFrameworkLaravel\ZendServiceProvider::class
 ```
 
 ### Usage
-Here's an example of direct calling of Model in laravel controller
+Below is an example of direct calling a Model in laravel controller
 
 ```
 $languagesTbl = app('ZendServiceManager')->get('MelisCoreTableLang');
