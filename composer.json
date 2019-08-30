@@ -12,11 +12,30 @@
     "cms",
     "melis",
     "zf2",
-    "module"
+    "module",
+    "laravel"
   ],
   "require": {
-    "melisplatform/melis-core": "^3.1"
+    "melisplatform/melis-core": "^3.1",
+    "fideloper/proxy": "^4.0",
+    "laravel/framework": "5.8.*",
+    "laravel/tinker": "^1.0"
   },
+  "require-dev": {
+    "beyondcode/laravel-dump-server": "^1.0",
+    "filp/whoops": "^2.0",
+    "fzaninotto/faker": "^1.4",
+    "mockery/mockery": "^1.0",
+    "nunomaduro/collision": "^3.0",
+    "phpunit/phpunit": "^8.0"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "MelisPlatformFrameworkLaravel\\": "src/"
