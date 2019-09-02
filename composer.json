@@ -35,5 +35,7 @@
     "psr-4": {
       "MelisPlatformFrameworkLaravel\\": "src/"
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
