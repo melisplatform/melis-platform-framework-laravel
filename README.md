@@ -5,7 +5,10 @@ access to the Service and Event Manager and Database connection configuration of
 application.
 
 ### Prerequisites
-This module requires ``melisplatform/melis-core`.
+This module requires:
+* melisplatform/melis-core:^3.1
+* laravel/framework:5.8.*
+
 It will automatically be done when using composer.
 
 ### Installing
