@@ -16,8 +16,13 @@
     "laravel"
   ],
   "require": {
-    "melisplatform/melis-core": "^3.1",
     "php": "^7.2",
+    "melisplatform/melis-core": "^3.1",
+    "doctrine/instantiator": "^1.1",
+    "symfony/console": "^4.2",
+    "symfony/finder": "^4.2",
+    "symfony/process": "^4.2",
+    "symfony/debug": "^4.2",
     "fideloper/proxy": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0"
