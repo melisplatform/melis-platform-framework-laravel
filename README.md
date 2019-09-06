@@ -59,7 +59,7 @@ The module.config.php contains an array keys called **aliases** and **factories*
     ),
 ),
 ```
-- The array keys inside **aliases** or **factories** can be called in Selix using the MelisServiceProvider.
+- The array keys inside **aliases** or **factories** can be called in Laravel framework using the MelisServiceProvider.
 ```
 $melisNewsSvc = $app['melis.services']->getService("MelisCmsNewsService");
 ```
