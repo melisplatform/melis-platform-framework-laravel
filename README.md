@@ -7,7 +7,7 @@ application.
 ### Prerequisites
 This module requires:
 * melisplatform/melis-core:^3.1
-* laravel/framework:5.8.*
+* laravel/framework:^6.0
 
 It will automatically be done when using composer.
 
