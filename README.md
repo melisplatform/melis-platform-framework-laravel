@@ -31,13 +31,44 @@ $languagesTbl = app('ZendServiceManager')->get('MelisCoreTableLang');
 $listArray = $languagesTbl->fetchAll();
 ```
 
-## Authors
+### Where to find Melis Services
+- Melis Services are found inside each Melis Modules and these melis modules can be found by following the path below.
+```
+/_docroot_/vendor/melisplatform/
+```
+- Inside each Melis Module you can find module.config.php in the config folder. <br />
+The module.config.php contains an array keys called **aliases** and **factories** under **service_manager**.
 
+```
+'service_manager' => array(
+    'invokables' => array(
+        
+    ),
+    'aliases' => array(
+        'translator' => 'MvcTranslator',
+        'MelisCmsNewsTable' => 'MelisCmsNews\Model\Tables\MelisCmsNewsTable',
+        'MelisCmsNewsTextsTable' => 'MelisCmsNews\Model\Tables\MelisCmsNewsTextsTable',
+    ),
+    'factories' => array(
+        //services
+        'MelisCmsNewsService' => 'MelisCmsNews\Service\Factory\MelisCmsNewsServiceFactory',
+        
+        //tables
+        'MelisCmsNews\Model\Tables\MelisCmsNewsTable' => 'MelisCmsNews\Model\Tables\Factory\MelisCmsNewsTableFactory',
+        'MelisCmsNews\Model\Tables\MelisCmsNewsTextsTable' => 'MelisCmsNews\Model\Tables\Factory\MelisCmsNewsTextsTableFactory',
+    ),
+),
+```
+- The array keys inside **aliases** or **factories** can be called in Selix using the MelisServiceProvider.
+```
+$melisNewsSvc = $app['melis.services']->getService("MelisCmsNewsService");
+```
+
+## Authors
 * **Melis Technology** - [www.melistechnology.com](https://www.melistechnology.com/)
 
 See also the list of [contributors](https://github.com/melisplatform/melis-core/contributors) who participated in this project.
 
 
 ## License
-
 This project is licensed under the OSL-3.0 License - see the [LICENSE.md](LICENSE.md) file for details
