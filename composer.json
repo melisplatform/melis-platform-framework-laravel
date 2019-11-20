@@ -20,7 +20,9 @@
     "melisplatform/melis-core": "^3.1",
     "fideloper/proxy": "^4.0",
     "laravel/framework": "^6.0",
-    "laravel/tinker": "^1.0"
+    "laravel/tinker": "^1.0",
+    "laravelcollective/html":"^6.0",
+    "nwidart/laravel-modules": "^6.2"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
@@ -36,6 +38,12 @@
   },
   "autoload": {
     "psr-4": {
+      "App\\": [
+        "../../../thirdparty/Laravel/app"
+      ],
+      "Modules\\": [
+        "../../../thirdparty/Laravel/Modules"
+      ],
       "MelisPlatformFrameworkLaravel\\": "src/"
     }
   }
