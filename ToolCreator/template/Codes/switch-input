@@ -1,0 +1,5 @@
+                    'switch_options' => [
+                        'label-on' => __('moduletpl::messages.common_activate'),
+                        'label-off' => __('moduletpl::messages.common_deactivate'),
+                        'icon' => "glyphicon glyphicon-resize-horizontal",
+                    ],

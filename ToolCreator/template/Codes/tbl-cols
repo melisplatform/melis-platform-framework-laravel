@@ -1,0 +1,5 @@
+            '#TCKEYCOL' => [
+                'text' => __('moduletpl::messages.#TCKEY_text'),
+                'css' => ['width' => '#TCTBLKEY%'],
+                'sortable' => true
+            ]

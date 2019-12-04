@@ -22,7 +22,7 @@
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0",
     "laravelcollective/html":"^6.0",
-    "nwidart/laravel-modules": "^6.2"
+    "nwidart/laravel-modules": "^6.2",
   },
   "require-dev": {
     "filp/whoops": "^2.0",

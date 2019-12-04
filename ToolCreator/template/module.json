@@ -1,0 +1,13 @@
+{
+    "name": "ModuleTpl",
+    "alias": "moduletpl",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\ModuleTpl\\Providers\\ModuleTplServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

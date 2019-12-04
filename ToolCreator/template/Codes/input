@@ -1,0 +1,5 @@
+            '#TCKEY' => [
+                'type' => '#TCINPUTTYPE',
+#TCINPUTOPTS
+#TCINPUTATTRS
+            ]

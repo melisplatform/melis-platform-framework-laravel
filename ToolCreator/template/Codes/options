@@ -1,0 +1,5 @@
+                'options' => [
+                    'label' => __('moduletpl::messages.#TCKEY_text'),
+                    'tooltip' => __('moduletpl::messages.#TCKEY_tooltip'),
+#TCINPUTOPTS
+                ],

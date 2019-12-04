@@ -24,6 +24,8 @@ class ZendServiceProvider extends ServiceProvider
         $this->app->singleton('ZendEventManager', function(){
             return $this->zendEventManager;
         });
+
+        $this->app->register(ModuleCreatorServiceProvider::class);
     }
 
     /**
@@ -36,7 +38,6 @@ class ZendServiceProvider extends ServiceProvider
         $this->zendApplication();
         $this->syncDatabaseConnection();
         $this->setLocale();
-        $this->moduleCreatorRoutes()();
     }
 
     /**
@@ -105,12 +106,5 @@ class ZendServiceProvider extends ServiceProvider
     {
         $locale = new Container('meliscore');
         $this->app->setLocale(explode('_', $locale['melis-lang-locale'])[0]);
-    }
-
-    protected function moduleCreatorRoutes()
-    {
-        Route::middleware('module-create')
-            ->namespace(__NAMESPACE__)
-            ->group(__DIR__.'/../Routes/module-create.php');
     }
 }
