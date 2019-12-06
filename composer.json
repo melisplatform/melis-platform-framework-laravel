@@ -16,7 +16,8 @@
     "laravel"
   ],
   "extra": {
-    "platform-autoload": false
+    "platform-autoload": false,
+    "melis-module": false
   },
   "require": {
     "php": "^7.2",
