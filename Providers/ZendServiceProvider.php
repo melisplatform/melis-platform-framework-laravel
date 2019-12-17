@@ -10,6 +10,8 @@ class ZendServiceProvider extends ServiceProvider
     public $zendServiceManager;
     public $zendEventManager;
 
+    const ZEND_DISK = 'zend_public';
+
     /**
      * Register any application services.
      *
@@ -38,6 +40,7 @@ class ZendServiceProvider extends ServiceProvider
         $this->zendApplication();
         $this->syncDatabaseConnection();
         $this->setLocale();
+        $this->addMelisPublic();
     }
 
     /**
@@ -96,6 +99,20 @@ class ZendServiceProvider extends ServiceProvider
                 ]
             ]);
         }
+    }
+
+    /**
+     * Adding custom config for
+     * disk root
+     */
+    public function addMelisPublic()
+    {
+        config([
+            'filesystems.disks.'. self::ZEND_DISK => [
+                'driver' => 'local',
+                'root'   => __DIR__. '/../../../../public/media',
+            ]
+        ]);
     }
 
     /**

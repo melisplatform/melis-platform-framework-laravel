@@ -20,4 +20,6 @@ return [
     'delete_item' => 'Delete item',
     'delete_item_message' => 'Are you sure you want to delete this item?',
     'delete_item_success' => 'Item deleted successfully',
+    'file_max_size' => 'Maximum allowed size for file is 3 megabytes or less',
+    'failed_upload' => 'Maximum allowed size for file is 3 megabytes or less'
 ];

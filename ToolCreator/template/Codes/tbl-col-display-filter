@@ -1,0 +1,3 @@
+                if ($col == '#TCKEY'){
+                    $data[$key][$col] = $coreSrv->sendEvent('melis_tool_column_display_#TCCOLDISPLAY', ['data' => $row])['data'];
+                }

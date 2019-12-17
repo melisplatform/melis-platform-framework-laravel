@@ -49,8 +49,8 @@ class ModuleServiceProvider extends ServiceProvider
     {
         Form::component('bsText', 'melisLaravel::form.text', ['name', 'label' => null, 'tooltip' => null, 'attributes' => [], 'value' => null]);
 
-        Form::macro('melisFieldRow', function($formConfig, $model = null){
-            return FieldRowHelper::createFields($formConfig, $model);
+        Form::macro('melisFieldRow', function($formConfig, $data = null, $defaultData = []){
+            return FieldRowHelper::createFields($formConfig, $data, $defaultData);
         });
     }
 

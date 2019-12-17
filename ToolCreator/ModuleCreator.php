@@ -210,7 +210,27 @@ class ModuleCreator
 
         $fillable = implode(', '.PHP_EOL."\t\t", $fillable);
 
-        $file = self::sp(['ModelName', '#TCTABLE', '#TCKEYNAME', '#TCFILLABLE'], [$entityName, $table, $primaryKey, $fillable], $file);
+
+        $fileInput = [];
+        $fileUpload = $this->fgc('Codes/file-upload');
+        foreach ($this->config['step5']['tcf-db-table-col-type'] As $key => $input){
+            $temp = $fileUpload;
+            if ($input == 'File')
+                $fileInput[] = $this->sp('#TCKEY', $this->config['step5']['tcf-db-table-col-editable'][$key], $temp);
+        }
+
+        $fileInput = ($fileInput) ? implode(PHP_EOL, $fileInput): '';
+
+        $storeFx = $this->fgc('Codes/store-file');
+
+        $callStoreFx = ($fileInput) ? '$this->storeFile();' : '';
+        $storeFx = ($fileInput) ? $this->sp('#TCFILEUPLOAD', $fileInput, $storeFx) : '';
+
+        $file = self::sp(
+            ['ModelName', '#TCTABLE', '#TCKEYNAME', '#TCFILLABLE', '#TCCALLSTOREFILE', '#TCSTOREFILEFUNTION'],
+            [$entityName, $table, $primaryKey, $fillable, $callStoreFx, $storeFx],
+            $file
+        );
 
         $this->generateModuleFile($entityName.'.php', $curDir, $file);
     }
@@ -225,6 +245,21 @@ class ModuleCreator
 
         $file = self::sp('ModelName', $entityName, $file);
 
+        $tblColDisplayFilters = [];
+        foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
+            if (is_bool(strpos($col, 'tclangtblcol_')) && $this->config['step4']['tcf-db-table-col-display'][$key] != 'raw_view'){
+                $tblColDisplayFilters[] = $this->sp(
+                    ['#TCKEY', '#TCCOLDISPLAY'],
+                    [$col, $this->config['step4']['tcf-db-table-col-display'][$key]],
+                    $this->fgc('/Codes/tbl-col-display-filter')
+                );
+            }
+        }
+
+        $displayColsTbl = $this->fgc('Codes/tbl-display-filter');
+        $displayColsTbl = ($tblColDisplayFilters) ? $this->sp('#TCTABLECOLS', implode(PHP_EOL, $tblColDisplayFilters), $displayColsTbl) : '';
+        $file = $this->sp('#TCDISPLAYTABLECOLS', $displayColsTbl, $file);
+
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
@@ -238,16 +273,43 @@ class ModuleCreator
         $requiredCols = [];
         $requiredColsMsg = [];
 
-        foreach ($this->config['step5']['tcf-db-table-col-required'] As $col)
+        foreach ($this->config['step5']['tcf-db-table-col-required'] As $key => $col)
             if ($col !== self::getMainTablePk()){
-                array_push($requiredCols, '\''.$col.'\' => \'required\'');
+
+                if ($this->config['step5']['tcf-db-table-col-type'][$key] !== 'File'){
+                    array_push($requiredCols, '\''.$col.'\' => \'required\'');
+                }
+
                 array_push($requiredColsMsg, '\''.$col.'.required\' => Lang::get(\'moduletpl::messages.input_required\')');
             }
+
+        $requiredFileInput = [];
+
+        foreach ($this->config['step5']['tcf-db-table-col-editable'] As $key => $col)
+            if ($this->config['step5']['tcf-db-table-col-type'][$key] == 'File'){
+
+                if (in_array($col, $this->config['step5']['tcf-db-table-col-required'])){
+                    $requiredFileInput[] = '$rules[\''. $col .'\'] = (request()->hasFile(\''. $col .'\')  || is_null($hasID)) ? $withRequired : $notRequired;';
+                }else{
+                    array_push($requiredCols, '\''.$col.'\' => \'file|image|max:3000\'');
+                }
+
+                array_push($requiredColsMsg, '\''.$col.'.max\' => Lang::get(\'moduletpl::messages.file_max_size\')');
+                array_push($requiredColsMsg, '\''.$col.'.uploaded\' => Lang::get(\'moduletpl::messages.failed_upload\')');
+            }
+
+        $fileUploadRequired = $this->fgc('Codes/file-upload-rules');
+
+        $fileUploadRequired = (!empty($requiredFileInput)) ? $fileUploadRequired.PHP_EOL."\t\t".implode("\t\t".PHP_EOL, $requiredFileInput) : '';
 
         $requiredCols = implode(', '.PHP_EOL."\t\t\t", $requiredCols);
         $requiredColsMsg = implode(', '.PHP_EOL."\t\t\t", $requiredColsMsg);
 
-        $file = self::sp(['ModelName', '#TCCOLSRULES', '#TCCOLSMGS'], [$entityName, $requiredCols, $requiredColsMsg], $file);
+        $file = self::sp(
+            ['ModelName', '#TCCOLSRULES', '#TCCOLSMGS', '#TCREQUIREDFILE'],
+            [$entityName, $requiredCols, $requiredColsMsg, $fileUploadRequired],
+            $file
+        );
 
         $this->generateModuleFile($entityName.'Request.php', $curDir, $file);
     }

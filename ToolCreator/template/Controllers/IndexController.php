@@ -75,6 +75,8 @@ class IndexController extends Controller
             ->limit($length)
             ->get();
 
+#TCDISPLAYTABLECOLS
+
         return response()->json([
             'draw' => (int) $request->input('draw'),
             'recordsTotal' => $totalRecords,
@@ -105,7 +107,7 @@ class IndexController extends Controller
         $model->fill($request->input());
 
         // Save
-        $model->save();
+        $model->store();
 
         // Save action to logs
         $logType = (!$id) ? ModelName::ADD : ModelName::UPDATE;

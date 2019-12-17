@@ -26,9 +26,13 @@ class ModelNameRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             #TCCOLSRULES
         ];
+
+#TCREQUIREDFILE
+
+        return $rules;
     }
 
     /**

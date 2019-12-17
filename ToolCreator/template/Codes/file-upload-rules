@@ -1,0 +1,3 @@
+        $hasID = request()->id;
+        $withRequired = 'required|file|image|max:3000';
+        $notRequired = 'file|image|max:3000';

@@ -28,42 +28,7 @@ $(function(){
             .html('<div id="loadingZone" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
     });
 
-    // $body.on("click", ".moduletpl-btn-save-action", function(){
-    //     // Form collection
-    //     var data = $("#moduletpl-album-form").serializeArray();
-    //
-    //     var param = "";
-    //     var id = $(this).data('id');
-    //     if (typeof id !== "undefined"){
-    //         param = "/"+id;
-    //     }
-    //
-    //     $.post('/melis/moduletpl/save'+param, data).done(function(res){
-    //
-    //         var data = JSON.parse(res);
-    //         var errors = [];
-    //
-    //         if (data.success){
-    //             // hide modal
-    //             $("#id_moduletpl_generic_modal_tool_container").modal("hide");
-    //             $(".moduletpl-refresh-content").trigger("click");
-    //
-    //             // Pop-up Notification
-    //             melisHelper.melisOkNotification(data.title, data.message);
-    //         }else{
-    //             // Melis js helper that pop-up input errors
-    //             melisHelper.melisKoNotification(data.title, data.message, data.errors);
-    //             // form errors
-    //             errors = data.errors;
-    //         }
-    //         // Reload notification bell
-    //         melisCore.flashMessenger();
-    //         //  Melis js helper that highlight input errors
-    //         melisCoreTool.highlightErrors(data.success, errors, "moduletpl-album-form");
-    //     });
-    // });
-
-    $body.on("click", "#moduletpl-btn-save-action", function(){
+    $body.on("click", ".moduletpl-btn-save-action", function(){
         var btn = $(this);
         var id = $(this).data("id");
         submitForm($("form#moduletpl-album-form"), id, btn);

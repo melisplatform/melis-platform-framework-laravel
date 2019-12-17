@@ -3,6 +3,7 @@
 namespace Modules\ModuleTpl\Entities;
 
 use MelisPlatformFrameworkLaravel\Entities\GenericModel;
+use MelisPlatformFrameworkLaravel\Providers\ZendServiceProvider;
 
 class ModelName extends GenericModel
 {
@@ -42,4 +43,17 @@ class ModelName extends GenericModel
      * @var string
      */
     const UPDATED_AT = null;
+
+    /**
+     * Store data
+     */
+    public function store()
+    {
+        // Store data
+        $this->save();
+
+        #TCCALLSTOREFILE
+    }
+
+#TCSTOREFILEFUNTION
 }

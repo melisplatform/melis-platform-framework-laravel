@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Lang;
 
 class FieldRowHelper
 {
-    static public function createFields($formConfig, $model = null)
+    static public function createFields($formConfig, $data = [], $defaultData = [])
     {
         if (!is_array($formConfig))
             return null;
@@ -38,8 +38,12 @@ class FieldRowHelper
 
             $element->setName($name);
 
-            if (is_object($model))
-                $element->setValue($model->$name);
+            if (!empty($defaultData))
+                if (!empty($defaultData[$name]))
+                    $element->setValue($defaultData[$name]);
+
+            if (!empty($data))
+                $element->setValue($data->$name);
 
             $element->setOptions($finalOptions);
             $element->setAttributes($finaleAttributes);
