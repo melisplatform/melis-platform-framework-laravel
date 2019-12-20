@@ -1,0 +1,32 @@
+        // Rows with math the language ID
+        $select = $this->selectQuery()
+                ->where('cnews_lang_id', '=', session('melis-lang-id'))
+                ->whereIn(
+                    $this->getKeyName(),
+                    $this->subQuery()
+                );
+
+        // Rows with null or doesn't have languages
+        $select->union(
+            $this->selectQuery('leftJoin')
+                ->whereNull('cnews_text_id')
+                ->whereIn(
+                    $this->getKeyName(),
+                    $this->subQuery('leftJoin')
+                )
+        );
+
+        // Rows not match to language ID but have other language ID
+        $select->union(
+            $this->selectQuery()
+                ->whereNotIn('cnews_id', function($query) {
+                    $query->select('cnews_id')
+                        ->from('melis_cms_news_texts')
+                        ->where('cnews_lang_id', '=', session('melis-lang-id'));
+                })
+                ->whereIn(
+                    $this->getKeyName(),
+                    $this->subQuery()
+                )
+                ->groupBy('DT_RowId')
+        );

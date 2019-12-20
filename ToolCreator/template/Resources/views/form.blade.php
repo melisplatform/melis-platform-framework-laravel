@@ -12,15 +12,18 @@
                     </ul>
                 </div>
                 <div class="widget-body innerAll inner-2x">
-                    <div class="tab-content">
+                    <div class="tab-content moduletpl-form-container">
                         <div class="tab-pane active" id="id-moduletpl-tool-modal">
                             <div class="row">
                                 <div class="col-md-12">
-                                    {{! $formAttr = ['url' => '/melis/moduletpl/save/'.$id , 'method' => 'post', 'id' => 'moduletpl-album-form'] }}
+                                    @php
+                                        $formAttr = ['id' => 'moduletpl-form'];
+                                    @endphp
+
                                     @if($model)
                                         {{ Form::model($model, $formAttr) }}
                                     @else
-                                        {!! Form::open($formAttr) !!}
+                                        {{ Form::open($formAttr) }}
                                     @endif
 
                                     {!! Form::melisFieldRow(config('moduletpl.form.properties'), $model) !!}

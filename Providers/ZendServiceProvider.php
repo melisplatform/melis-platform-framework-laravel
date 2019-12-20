@@ -2,6 +2,7 @@
 
 namespace MelisPlatformFrameworkLaravel\Providers;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 use Zend\Session\Container;
 
@@ -123,5 +124,9 @@ class ZendServiceProvider extends ServiceProvider
     {
         $locale = new Container('meliscore');
         $this->app->setLocale(explode('_', $locale['melis-lang-locale'])[0]);
+
+        // Set current language id to laravel session
+        session(['melis-lang-id' => $locale['melis-lang-id']]);
+
     }
 }

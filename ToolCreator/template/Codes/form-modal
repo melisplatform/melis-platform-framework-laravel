@@ -1,0 +1,22 @@
+    /**
+     * Display the form
+     *
+     * @param null $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function form($id = null)
+    {
+        $model = null;
+
+        if ($id)
+            $model = ModelName::find($id);
+
+        $param = [
+            'id' => $id,
+            'model' =>  $model
+        ];
+
+#TCLANGCMS
+
+        return view('moduletpl::form', $param);
+    }

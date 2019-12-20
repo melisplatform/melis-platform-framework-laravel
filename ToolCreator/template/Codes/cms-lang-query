@@ -1,0 +1,2 @@
+        $cmsLang = app('ZendServiceManager')->get('MelisEngineTableCmsLang');
+        $param['langs'] = $cmsLang->fetchAll()->toArray();

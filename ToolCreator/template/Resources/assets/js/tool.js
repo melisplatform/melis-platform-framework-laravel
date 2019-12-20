@@ -28,11 +28,7 @@ $(function(){
             .html('<div id="loadingZone" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
     });
 
-    $body.on("click", ".moduletpl-btn-save-action", function(){
-        var btn = $(this);
-        var id = $(this).data("id");
-        submitForm($("form#moduletpl-album-form"), id, btn);
-    });
+
 
     var submitForm  = function(form, id, btn){
 
@@ -45,6 +41,8 @@ $(function(){
             btn.attr('disabled', true);
 
             var formData = new FormData(this);
+
+#TCLANGDATAFORM
 
             var param = "";
             if (typeof id !== "undefined"){
@@ -61,7 +59,6 @@ $(function(){
             }).done(function (res) {
 
                 var data = JSON.parse(res);
-                var errors = [];
 
                 if (data.success){
                     // hide modal
@@ -72,14 +69,12 @@ $(function(){
                     melisHelper.melisOkNotification(data.title, data.message);
                 }else{
                     // Melis js helper that pop-up input errors
-                    melisHelper.melisKoNotification(data.title, data.message, data.errors);
-                    // form errors
-                    errors = data.errors;
+                    melisHelper.melisMultiKoNotification(data.title, data.message, data.errors);
                 }
                 // Reload notification bell
                 melisCore.flashMessenger();
                 //  Melis js helper that highlight input errors
-                melisCoreTool.highlightErrors(data.success, errors, "moduletpl-album-form");
+                melisHelper.highlightMultiErrors(data.success, data.errors, ".moduletpl-album-form");
 
                 btn.attr('disabled', false);
 
@@ -90,6 +85,13 @@ $(function(){
 
         form.submit();
     };
+
+
+    $body.on("click", ".moduletpl-btn-save-action", function(){
+        var btn = $(this);
+        var id = $(this).data("id");
+        submitForm($("form#moduletpl-form"), id, btn);
+    });
 
     $body.on("click", ".moduletpl-delete-action", function(){
 

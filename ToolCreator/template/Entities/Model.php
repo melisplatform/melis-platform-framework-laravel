@@ -3,7 +3,7 @@
 namespace Modules\ModuleTpl\Entities;
 
 use MelisPlatformFrameworkLaravel\Entities\GenericModel;
-use MelisPlatformFrameworkLaravel\Providers\ZendServiceProvider;
+use MelisPlatformFrameworkLaravel\Helpers\ZendEvent;
 
 class ModelName extends GenericModel
 {
@@ -55,5 +55,35 @@ class ModelName extends GenericModel
         #TCCALLSTOREFILE
     }
 
-#TCSTOREFILEFUNTION
+#TCSTOREFILEFUNCTION
+
+#TCLANGRELATION
+
+    public function getList($start = 0, $length = 10, $orderKey = null, $sortOrder = 'ASC', $search = null)
+    {
+#TCSELECT
+
+        // Fetching total records from db table
+        $totalRecords = $select->get()->count();
+
+        // Fetching filtered records from db table
+        $recordsFiltered = $select->get()->count();
+
+        // Fetching filtered records with Order, offset and limit from db table
+        $data = $select->orderBy($orderKey, $sortOrder)
+            ->offset($start)
+            ->limit($length)
+            ->get();
+
+#TCDISPLAYTABLECOLS
+
+        return [
+            'draw' => (int) request()->input('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' =>  $recordsFiltered,
+            'data' => $data,
+        ];
+    }
+
+#TCJOINMETHODS
 }

@@ -11,6 +11,7 @@ return [
     'common_deactivate' => 'Inactif',
     'choose_file' => 'Choisir un fichier',
     'properties' => 'Propriétés',
+    'languages' => 'Langages',
     'save_item' => 'Enregistrer l\'élément',
     'add_item_success' => 'Elément créé avec succès',
     'add_failed' => 'Impossible d\'enregistrer',

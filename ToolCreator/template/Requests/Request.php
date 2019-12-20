@@ -2,10 +2,10 @@
 namespace Modules\ModuleTpl\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Validator;
 use Modules\ModuleTpl\Entities\ModelName;
+use Modules\ModuleTpl\Listeners\DeleteItemRequest;
+use Modules\ModuleTpl\Listeners\SaveFormRequest;
 
 class ModelNameRequest extends FormRequest
 {
@@ -47,45 +47,54 @@ class ModelNameRequest extends FormRequest
         ];
     }
 
-    /**
-     * Modifying error message before sending back to Front
-     *
-     * @param Validator $validator
-     */
-    public function failedValidation(Validator $validator)
+    public function validate(SaveFormRequest $request)
     {
-        $errors = [];
+        $validator = Validator::make(
+            request()->input(),
+            $this->rules(),
+            $this->messages()
+        );
 
-        /**
-         * Modifying errors before sending back to the from
-         * This is for front side the will handle the errors
-         * of the js helper
-         */
-        foreach ($validator->errors()->getMessages() As $key => $err){
-            // Adding "label" on each item
-            $errors[$key]['label'] = Lang::get('moduletpl::messages.'.$key.'_text');
-            foreach ($err As $ek => $er)
-                $errors[$key]['err_'.++$ek] = $er;
+        if (!$validator->fails()) {
+
+            return true;
+
+        } else {
+
+            $errors = [];
+
+            foreach ($validator->errors()->getMessages() As $key => $err){
+                // Adding "label" on each item
+                $errors[$key]['label'] = __('moduletpl::messages.'.$key.'_text');
+                foreach ($err As $ek => $er)
+                    $errors[$key]['err_'.++$ek] = $er;
+            }
+
+            return $errors;
         }
+    }
 
-        // Save action to logs
-        $itemId = request()->route('id') ?? null;
-        $logType = (!$itemId) ? ModelName::ADD : ModelName::UPDATE;
+    public function store(SaveFormRequest $request)
+    {
+        $model = new ModelName();
+        if ($request->event->id)
+            $model = ModelName::find($request->event->id);
 
-        $title = Lang::get('moduletpl::messages.save_item');
-        $message = Lang::get('moduletpl::messages.'.strtolower($logType) . '_failed');
+        // Fill with Data from input
+        $model->fill(request()->input());
 
-        // Album Model
-        $calendar = new ModelName();
-        $calendar->logAction(false, $title, $message, $logType, $itemId);
+        // Save
+        $model->store();
 
-        $jsonResponse = [
-            'success' => 0, // Flag trigger on front side that error occurred
-            'errors' => $errors,
-            'title' => $title,
-            'message' => $message,
-        ];
+        // Current item id
+        $keyName = $model->getKeyName();
+        $request->event->id = $model->$keyName;
+    }
 
-        throw new HttpResponseException(response()->json($jsonResponse, 200));
+    public function delete(DeleteItemRequest $event)
+    {
+        $model = ModelName::find($event->event->id);
+        if (!is_null($model))
+            $model->delete();
     }
 }

@@ -7,6 +7,7 @@ use Collective\Html\HtmlFacade;
 use MelisPlatformFrameworkLaravel\Helpers\DataTableHelper;
 use Collective\Html\FormFacade As Form;
 use MelisPlatformFrameworkLaravel\Helpers\FieldRowHelper;
+use MelisPlatformFrameworkLaravel\Helpers\ZendEvent;
 
 class ModuleServiceProvider extends ServiceProvider
 {

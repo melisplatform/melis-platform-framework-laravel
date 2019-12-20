@@ -15,7 +15,7 @@ Route::prefix('melis/moduletpl')->group(function() {
 
     Route::get('/tool', 'IndexController@index');
 
-    Route::get('/form/{id?}', 'IndexController@form');
+    #TCTOOLTYPE
 
     Route::post('/get-list', 'IndexController@list');
 

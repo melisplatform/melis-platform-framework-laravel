@@ -1,0 +1,6 @@
+        $select = $this::select('*', $this->getKeyName().' As DT_RowId');
+
+        $dataTableConfig = config('moduletpl.table');
+        if ($search && $dataTableConfig['searchables'])
+            foreach ($dataTableConfig['searchables'] As $col)
+                $select->orWhere($col, 'like', '%'.$search.'%');

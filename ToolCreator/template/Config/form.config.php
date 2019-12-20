@@ -4,6 +4,6 @@ return [
     'form' => [
         'properties' => [
 #TCFIELDROW
-        ]
+        ],#TCLANGFIELDROW
     ]
 ];

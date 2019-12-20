@@ -1,0 +1,4 @@
+    public function languages()
+    {
+        return $this->hasMany(ModelLangName::class, '#TCKEY');
+    }

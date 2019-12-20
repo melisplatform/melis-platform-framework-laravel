@@ -35,10 +35,12 @@ class ModuleCreator
             $this->moduleName() => [
                 'Config',
                 'Entities',
+                'Events',
                 'Http' => [
                     'Controllers',
                     'Requests'
                 ],
+                'Listeners',
                 'Providers',
                 'Resources' => [
                     'lang',
@@ -65,7 +67,9 @@ class ModuleCreator
 
         $this->moduleJson();
 
-        $this->setupJs();
+//        $this->setupJs();
+
+        exit;
 
         Artisan::call('module:enable '.$this->moduleName());
 
@@ -91,48 +95,20 @@ class ModuleCreator
 
     private function setupConfig($curDir)
     {
+        // Module Config
         $fileName = 'config.php';
         $file = self::fgc('Config/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
 
-        $fileName = 'table.config.php';
-        $file = self::fgc('Config/'.$fileName);
+        // Module Form Config
+        $this->setupFormConfig($curDir);
 
-        $tblCols = self::fgc('Codes/tbl-cols');
+        // Module Table Config
+        $this->setupTableConfig($curDir);
+    }
 
-        // Table columns
-        $tblColumns = [];
-        // Table searchable columns
-        $searchableColumns = [];
-
-        // Dividing length of table to several columns
-        $colWidth = number_format(100/count($this->config['step4']['tcf-db-table-cols']), 0);
-        foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
-
-            // Primary column use to update and delete raw entry
-            $priCol = ($col == self::getMainTablePk()) ? 'DT_RowId' : $col;
-
-            $strColTmp = $this->sp('#TCKEYCOL', $priCol, $tblCols);
-            $strColTmp = $this->sp('#TCKEY', $col, $strColTmp);
-            $tblColumns[] = $this->sp('#TCTBLKEY', $colWidth, $strColTmp);
-
-            if (!isset($searchableColumns[$col]))
-                $searchableColumns[$col] = $col;
-            else
-                $searchableColumns[$col] = $this->config['step3']['tcf-db-table'].'.'.$col;
-        }
-
-        // Format array to string
-        foreach ($searchableColumns As $key => $col)
-            $searchableColumns[$key] = "\t\t\t".'\''.$col.'\'';
-
-        $file = $this->sp('#TABLECOLUMNS', implode(','."\n", $tblColumns), $file);
-        $file = $this->sp('#TABLESEARCHBLECOLUMNS', implode(','."\n", $searchableColumns), $file);
-
-        $this->generateModuleFile($fileName, $curDir, $file);
-
-
-
+    private function setupFormConfig($curDir)
+    {
         $fileName = 'form.config.php';
         $file = self::fgc('Config/'.$fileName);
 
@@ -190,6 +166,52 @@ class ModuleCreator
 
         $fieldRow = implode(','.PHP_EOL, $fieldRow);
         $file = $this->sp('#TCFIELDROW', $fieldRow, $file);
+
+        $langFieldRow = '';
+        if ($this->hasLanguage()) {
+            // @TODO
+        }
+        $file = $this->sp('#TCLANGFIELDROW', $langFieldRow, $file);
+
+        $this->generateModuleFile($fileName, $curDir, $file);
+    }
+
+    private function setupTableConfig($curDir)
+    {
+        $fileName = 'table.config.php';
+        $file = self::fgc('Config/'.$fileName);
+
+        $tblCols = self::fgc('Codes/tbl-cols');
+
+        // Table columns
+        $tblColumns = [];
+        // Table searchable columns
+        $searchableColumns = [];
+
+        // Dividing length of table to several columns
+        $colWidth = number_format(100/count($this->config['step4']['tcf-db-table-cols']), 0);
+        foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
+
+            // Primary column use to update and delete raw entry
+            $priCol = ($col == self::getMainTablePk()) ? 'DT_RowId' : $col;
+
+            $strColTmp = $this->sp('#TCKEYCOL', $priCol, $tblCols);
+            $strColTmp = $this->sp('#TCKEY', $col, $strColTmp);
+            $tblColumns[] = $this->sp('#TCTBLKEY', $colWidth, $strColTmp);
+
+            if (!isset($searchableColumns[$col]))
+                $searchableColumns[$col] = $col;
+            else
+                $searchableColumns[$col] = $this->config['step3']['tcf-db-table'].'.'.$col;
+        }
+
+        // Format array to string
+        foreach ($searchableColumns As $key => $col)
+            $searchableColumns[$key] = "\t\t\t".'\''.$col.'\'';
+
+        $file = $this->sp('#TABLECOLUMNS', implode(','."\n", $tblColumns), $file);
+        $file = $this->sp('#TABLESEARCHBLECOLUMNS', implode(','."\n", $searchableColumns), $file);
+
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
@@ -227,23 +249,14 @@ class ModuleCreator
         $storeFx = ($fileInput) ? $this->sp('#TCFILEUPLOAD', $fileInput, $storeFx) : '';
 
         $file = self::sp(
-            ['ModelName', '#TCTABLE', '#TCKEYNAME', '#TCFILLABLE', '#TCCALLSTOREFILE', '#TCSTOREFILEFUNTION'],
+            ['ModelName', '#TCTABLE', '#TCKEYNAME', '#TCFILLABLE', '#TCCALLSTOREFILE', '#TCSTOREFILEFUNCTION'],
             [$entityName, $table, $primaryKey, $fillable, $callStoreFx, $storeFx],
             $file
         );
 
-        $this->generateModuleFile($entityName.'.php', $curDir, $file);
-    }
-
-    private function setupControllers($curDir)
-    {
-        $fileName = 'IndexController.php';
-        $file = self::fgc('Controllers/'.$fileName);
-
-        $table = $this->config['step3']['tcf-db-table'];
-        $entityName = self::makeEntityName($table);
-
-        $file = self::sp('ModelName', $entityName, $file);
+        $modelRelation = '';
+        $selectQry = '';
+        $selectQryFx = '';
 
         $tblColDisplayFilters = [];
         foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
@@ -257,8 +270,61 @@ class ModuleCreator
         }
 
         $displayColsTbl = $this->fgc('Codes/tbl-display-filter');
-        $displayColsTbl = ($tblColDisplayFilters) ? $this->sp('#TCTABLECOLS', implode(PHP_EOL, $tblColDisplayFilters), $displayColsTbl) : '';
-        $file = $this->sp('#TCDISPLAYTABLECOLS', $displayColsTbl, $file);
+        $tableColsDisplay = ($tblColDisplayFilters) ? $this->sp('#TCTABLECOLS', implode(PHP_EOL, $tblColDisplayFilters), $displayColsTbl) : '';
+
+        if (!$this->hasLanguage()) {
+            $selectQry = $this->fgc('Codes/table-get-list');
+        } else {
+            // @TODO
+        }
+
+        $file = $this->sp(
+            ['#TCLANGRELATION', '#TCSELECT', '#TCDISPLAYTABLECOLS', '#TCJOINMETHODS'],
+            [$modelRelation, $selectQry, $tableColsDisplay, $selectQryFx],
+            $file
+        );
+
+        $this->generateModuleFile($entityName.'.php', $curDir, $file);
+    }
+
+    public function setupEvents($curDir)
+    {
+        $fileName = 'SaveFormEvent.php';
+        $file = self::fgc('Events/'.$fileName);
+        $this->generateModuleFile($fileName, $curDir, $file);
+
+        $fileName = 'DeleteItemEvent.php';
+        $file = self::fgc('Events/'.$fileName);
+        $this->generateModuleFile($fileName, $curDir, $file);
+    }
+
+    private function setupControllers($curDir)
+    {
+        $fileName = 'IndexController.php';
+        $file = self::fgc('Controllers/'.$fileName);
+
+        $table = $this->config['step3']['tcf-db-table'];
+        $entityName = self::makeEntityName($table);
+
+        // #TCTOOLTYPEEDTION
+        $toolForm = '';
+        if ($this->isDbTool()) {
+
+            if ($this->isModalTypeTool()) {
+
+                $toolForm = $this->fgc('Codes/form-modal');
+
+                $langQuery = ($this->hasLanguage()) ? $this->fgc('Codes/cms-lang-query') : '';
+
+                $toolForm = $this->sp('#TCLANGCMS', $langQuery, $toolForm);
+            } else {
+                // @TODO for tabulation
+            }
+        }
+
+        $file = $this->sp('#TCTOOLTYPEEDTION', $toolForm, $file);
+
+        $file = self::sp('ModelName', $entityName, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
     }
@@ -280,7 +346,7 @@ class ModuleCreator
                     array_push($requiredCols, '\''.$col.'\' => \'required\'');
                 }
 
-                array_push($requiredColsMsg, '\''.$col.'.required\' => Lang::get(\'moduletpl::messages.input_required\')');
+                array_push($requiredColsMsg, '\''.$col.'.required\' => __(\'moduletpl::messages.input_required\')');
             }
 
         $requiredFileInput = [];
@@ -294,8 +360,8 @@ class ModuleCreator
                     array_push($requiredCols, '\''.$col.'\' => \'file|image|max:3000\'');
                 }
 
-                array_push($requiredColsMsg, '\''.$col.'.max\' => Lang::get(\'moduletpl::messages.file_max_size\')');
-                array_push($requiredColsMsg, '\''.$col.'.uploaded\' => Lang::get(\'moduletpl::messages.failed_upload\')');
+                array_push($requiredColsMsg, '\''.$col.'.max\' => __(\'moduletpl::messages.file_max_size\')');
+                array_push($requiredColsMsg, '\''.$col.'.uploaded\' => __(\'moduletpl::messages.failed_upload\')');
             }
 
         $fileUploadRequired = $this->fgc('Codes/file-upload-rules');
@@ -314,14 +380,49 @@ class ModuleCreator
         $this->generateModuleFile($entityName.'Request.php', $curDir, $file);
     }
 
+    private function setupListeners($curDir)
+    {
+        $table = $this->config['step3']['tcf-db-table'];
+        $entityName = self::makeEntityName($table);
+
+        $fileName = 'SaveFormRequest.php';
+        $file = self::fgc('Listeners/'.$fileName);
+
+        $langRequest = '';
+        if ($this->hasLanguage()) {
+            // @TODO
+        }
+        $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
+        $file = self::sp('ModelName', $entityName, $file);
+
+        $this->generateModuleFile($fileName, $curDir, $file);
+
+
+        $fileName = 'DeleteItemRequest.php';
+        $file = self::fgc('Listeners/'.$fileName);
+
+        $langRequest = '';
+        if ($this->hasLanguage()) {
+            // @TODO
+        }
+        $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
+        $file = self::sp('ModelName', $entityName, $file);
+
+        $this->generateModuleFile($fileName, $curDir, $file);
+    }
+
     private function setupProviders($curDir)
     {
-        $file = self::fgc('Providers/ServiceProvider.php');
-        $this->generateModuleFile($this->moduleName().'ServiceProvider.php', $curDir, $file);
+        $fileName = 'ModuleServiceProvider.php';
+        $file = self::fgc('Providers/'.$fileName);
+        $this->generateModuleFile($fileName, $curDir, $file);
 
         $fileName = 'RouteServiceProvider.php';
-        $file = self::fgc('Providers/RouteServiceProvider.php');
+        $file = self::fgc('Providers/'.$fileName);
+        $this->generateModuleFile($fileName, $curDir, $file);
 
+        $fileName = 'EventServiceProvider.php';
+        $file = self::fgc('Providers/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
@@ -428,9 +529,13 @@ class ModuleCreator
 
     private function setupViews($curDir)
     {
-        $fileName = 'form.blade.php';
+        if (!$this->hasLanguage())
+            $fileName = 'form.blade.php';
+        else
+            $fileName = 'lang-form.blade.php';
+
         $file = self::fgc('Resources/views/'.$fileName);
-        $this->generateModuleFile($fileName, $curDir, $file);
+        $this->generateModuleFile(str_replace('lang-', '', $fileName), $curDir, $file);
 
         $fileName = 'index.blade.php';
         $file = self::fgc('Resources/views/'.$fileName);
@@ -445,6 +550,13 @@ class ModuleCreator
 
         $fileName = 'web.php';
         $file = self::fgc('Routes/'.$fileName);
+
+        if ($this->isModalTypeTool()) {
+            $route = 'Route::get(\'/form/{id?}\', \'IndexController@form\');';
+        } else {
+            $route = 'Route::get(\'/tool-properties/{id?}\', \'IndexController@properties\');';
+        }
+        $file = $this->sp('#TCTOOLTYPE', $route, $file);
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
@@ -455,6 +567,12 @@ class ModuleCreator
 
         $zendModule = __DIR__ .'/../../../../module/';
         $moduleAssetsDir = $zendModule.DIRECTORY_SEPARATOR.$this->moduleName().DIRECTORY_SEPARATOR.'public/js';
+
+        $langFromData = '';
+        if ($this->hasLanguage()) {
+            #TODO
+        }
+        $file = $this->sp('#TCLANGDATAFORM', $langFromData, $file);
 
         $this->generateModuleFile($fileName, $moduleAssetsDir, $file);
     }
@@ -578,6 +696,23 @@ class ModuleCreator
         $str = str_replace("Ñ", "N", $str);
 
         return ($str);
+    }
+
+    private function isDbTool()
+    {
+        return $this->config['step1']['tcf-tool-type'] == 'db' ? true : false;
+    }
+
+    private function isModalTypeTool()
+    {
+        return $this->config['step1']['tcf-tool-edit-type'] == 'modal' ? true : false;
+    }
+
+
+
+    private function hasLanguage()
+    {
+        return ($this->config['step3']['tcf-db-table-has-language']) ? true : false;
     }
 
 }
