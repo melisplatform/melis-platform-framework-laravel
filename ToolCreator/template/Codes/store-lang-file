@@ -1,0 +1,7 @@
+    /**
+     * Store file upload
+     */
+    public function storeFile($form)
+    {
+#TCFILEUPLOAD
+    }

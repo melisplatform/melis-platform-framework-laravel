@@ -11,7 +11,7 @@ class DeleteItemRequest
     public $event;
 
     public $deleteRequests = [
-       \Modules\ModuleTpl\Http\Requests\MelisCalendarRequest::class,#TCLANGREQUEST
+       \Modules\ModuleTpl\Http\Requests\ModelNameRequest::class,#TCLANGREQUEST
     ];
 
     public function handle(DeleteItemEvent $event)

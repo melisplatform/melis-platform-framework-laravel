@@ -21,6 +21,5 @@ return [
     'delete_item' => 'Supprimer l\'élément',
     'delete_item_message' => 'Etes-vous sûr de vouloir supprimer cet élément?',
     'delete_item_success' => 'Elément supprimé avec succès',
-    'file_max_size' => 'La taille maximale autorisée pour le fichier est de 3 méga-octet ou moins',
-    'failed_upload' => 'La taille maximale autorisée pour le fichier est de 3 méga-octet ou moins',
+    'max_upload' => 'La taille maximale autorisée pour le fichier est de 3 méga-octet ou moins',
 ];

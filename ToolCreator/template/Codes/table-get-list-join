@@ -1,0 +1,38 @@
+    private function selectQuery($joinType = 'join')
+    {
+        $select = $this::select('*',  $this->getTable().'.'.$this->getKeyName().' As DT_RowId');
+        $select->$joinType((new ModelLangName)->getTable(), function ($join) {
+            $this->joinLanguage($join);
+        });
+
+        return $select;
+    }
+
+    private function joinLanguage($join)
+    {
+        $langModel = new ModelLangName();
+        $join->on($langModel->getTable().'.'.$langModel::MAIN_FOREIGN_KEY, '=', $this->getTable().'.'.$this->getKeyName());
+    }
+
+    private function subQuery($joinType = 'join')
+    {
+        $search = request()->input('search.value');
+
+        $langModel = new ModelLangName();
+
+        $query = $this::select($this->getTable().'.'.$this->getKeyName());
+        $query->$joinType($langModel->getTable(), function ($join) {
+            $this->joinLanguage($join);
+        });
+
+        $searchableCols[$this->getTable()] = array_merge([$this->getKeyName()], $this->getFillable());
+        $searchableCols[$langModel->getTable()] = array_merge([$langModel->getKeyName()], $langModel->getFillable());
+
+        if (!empty($search))
+            foreach ($searchableCols As $tbl => $cols) {
+                foreach ($cols As $col)
+                    $query->orWhere($tbl.'.'.$col, 'like', '%'.trim($search).'%');
+            }
+
+        return $query;
+    }

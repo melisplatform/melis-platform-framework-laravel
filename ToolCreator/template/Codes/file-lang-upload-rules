@@ -7,17 +7,19 @@
      * @param bool $required
      * @return array
      */
-    public function fileRules($rules, $input, $required = true)
+    public function fileRules($rules, $form, $input, $required = true)
     {
         $fileRules = 'max:3072'; // 3 Megabytes
+
+        $fileInput = 'language.'.$form.'.'.$input;
 
         if ($required &&
             (is_null(request()->id) ||
                 (!is_null(request()->id) &&
-                    request()->hasFile($input)))) {
+                    request()->hasFile($fileInput)))) {
                 $rules = array_merge($rules, [$input => 'required|'.$fileRules]);
         } else
-            if (request()->hasFile($input)){
+            if (request()->hasFile($fileInput)){
                 $rules = array_merge($rules, [$input => $fileRules]);
             }
 

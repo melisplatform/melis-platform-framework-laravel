@@ -30,10 +30,12 @@ class ModelNameRequest extends FormRequest
             #TCCOLSRULES
         ];
 
-#TCREQUIREDFILE
+        #TCREQUIREDFILE
 
         return $rules;
     }
+
+#TCFILERULESFX
 
     /**
      * Get the error messages for the defined validation rules.
@@ -47,10 +49,10 @@ class ModelNameRequest extends FormRequest
         ];
     }
 
-    public function validate(SaveFormRequest $request)
+    public function validate(SaveFormRequest $event)
     {
         $validator = Validator::make(
-            request()->input(),
+            array_merge(request()->input(), request()->allFiles()),
             $this->rules(),
             $this->messages()
         );
@@ -69,6 +71,14 @@ class ModelNameRequest extends FormRequest
                 foreach ($err As $ek => $er)
                     $errors[$key]['err_'.++$ek] = $er;
             }
+
+            // Arrange base on form input fields order
+            $temp = [];
+            foreach (config('moduletpl.form.properties') As $col => $val)
+                if (isset($errors[$col]))
+                    $temp[$col] = $errors[$col];
+
+            $errors = $temp;
 
             return $errors;
         }

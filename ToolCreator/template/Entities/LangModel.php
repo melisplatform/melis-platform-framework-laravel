@@ -3,10 +3,9 @@
 namespace Modules\ModuleTpl\Entities;
 
 use MelisPlatformFrameworkLaravel\Entities\GenericModel;
-use MelisPlatformFrameworkLaravel\Helpers\ZendEvent;
 use MelisPlatformFrameworkLaravel\Providers\ZendServiceProvider;
 
-class ModelName extends GenericModel
+class ModelLangName extends GenericModel
 {
     /**
      * The table associated with the model.
@@ -21,6 +20,16 @@ class ModelName extends GenericModel
      * @var string
      */
     protected $primaryKey = '#TCKEYNAME';
+
+    /**
+     * The foreign key to the Main table
+     */
+    const MAIN_FOREIGN_KEY = '#TCFK1';
+
+    /**
+     * The foreign key to the CMS language table
+     */
+    const LANG_FOREIGN_KEY = '#TCFK2';
 
     /**
      * The attributes that are mass assignable.
@@ -48,7 +57,7 @@ class ModelName extends GenericModel
     /**
      * Store data
      */
-    public function store()
+    public function store($form)
     {
         // Store data
         $this->save();
@@ -57,34 +66,4 @@ class ModelName extends GenericModel
     }
 
 #TCSTOREFILEFUNCTION
-
-#TCLANGRELATION
-
-    public function getList($start = 0, $length = 10, $orderKey = null, $sortOrder = 'ASC', $search = null)
-    {
-#TCSELECT
-
-        // Fetching total records from db table
-        $totalRecords = $select->get()->count();
-
-        // Fetching filtered records from db table
-        $recordsFiltered = $select->get()->count();
-
-        // Fetching filtered records with Order, offset and limit from db table
-        $data = $select->orderBy($orderKey, $sortOrder)
-            ->offset($start)
-            ->limit($length)
-            ->get();
-
-#TCDISPLAYTABLECOLS
-
-        return [
-            'draw' => (int) request()->input('draw'),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' =>  $recordsFiltered,
-            'data' => $data,
-        ];
-    }
-
-#TCJOINMETHODS
 }

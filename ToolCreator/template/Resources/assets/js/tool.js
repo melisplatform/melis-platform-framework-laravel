@@ -74,7 +74,7 @@ $(function(){
                 // Reload notification bell
                 melisCore.flashMessenger();
                 //  Melis js helper that highlight input errors
-                melisHelper.highlightMultiErrors(data.success, data.errors, ".moduletpl-album-form");
+                melisHelper.highlightMultiErrors(data.success, data.errors, ".moduletpl-form-container");
 
                 btn.attr('disabled', false);
 

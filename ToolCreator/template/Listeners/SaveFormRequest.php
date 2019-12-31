@@ -11,7 +11,7 @@ class SaveFormRequest
     public $event;
 
     public $formRequests = [
-        \Modules\ModuleTpl\Http\Requests\MelisCalendarRequest::class,#TCLANGREQUEST
+        \Modules\ModuleTpl\Http\Requests\ModelNameRequest::class,#TCLANGREQUEST
     ];
 
     public function handle(SaveFormEvent $event)

@@ -62,7 +62,7 @@
                                         <div id="moduletpl-text-translation-{{ $lang['lang_cms_locale'] }}" class="tab-pane {{ ($key) ? '':'active' }}">
 
                                             @php
-                                                $formAttr = ['id' => 'moduletpl-lang-form-'.$lang['lang_cms_id'], 'class' => 'moduletpl-lang-form'];
+                                                $formAttr = ['id' => 'moduletpl-lang-form-'.$lang['lang_cms_id'], 'data-lang-id' => $lang['lang_cms_id'], 'class' => 'moduletpl-lang-form'];
                                                 $data = null;
                                                 $defaultData['cnews_lang_id'] = $lang['lang_cms_id'];
                                             @endphp

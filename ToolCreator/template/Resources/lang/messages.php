@@ -21,6 +21,5 @@ return [
     'delete_item',
     'delete_item_message',
     'delete_item_success',
-    'file_max_size',
-    'failed_upload',
+    'max_upload',
 ];

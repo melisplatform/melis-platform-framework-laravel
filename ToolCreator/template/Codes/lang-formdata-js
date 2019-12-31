@@ -1,13 +1,18 @@
-            $("form.moduletpl-lang-form").each(function(i, v){
+            $("form.moduletpl-lang-form").each(function(){
+                var formLangId = $(this).data("lang-id");
                 $.each($(this).serializeArray(), function(){
-                    formData.append('language['+i+']['+this.name+']', this.value);
+                    if (!$(this).prop('disabled')){
+                        formData.append('language['+formLangId+']['+this.name+']', this.value);
+                    }
                 });
 
                 var formFiles = $(this).find("[type='file']");
                 $.each(formFiles, function(){
-                    formData.append('language['+i+']['+$(this).attr("name")+']', $(this).data("value"));
-                    if (typeof $(this)[0].files[0] !== "undefined"){
-                        formData.append('language['+i+']['+$(this).attr("name")+']', $(this)[0].files[0]);
+                    if (!$(this).prop('disabled')){
+                        // formData.append('language['+formLangId+']['+$(this).attr("name")+']', $(this).data("value"));
+                        if (typeof $(this)[0].files[0] !== "undefined"){
+                            formData.append('language['+formLangId+']['+$(this).attr("name")+']', $(this)[0].files[0]);
+                        }
                     }
                 });
             });

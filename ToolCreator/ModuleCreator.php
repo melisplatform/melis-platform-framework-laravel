@@ -3,12 +3,13 @@
 namespace MelisPlatformFrameworkLaravel\ToolCreator;
 
 use function GuzzleHttp\Psr7\str;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Zend\Session\Container;
 
-class ModuleCreator
+class ModuleCreator extends Controller
 {
 
     private $config;
@@ -68,14 +69,8 @@ class ModuleCreator
         $this->moduleJson();
 
 //        $this->setupJs();
-
-        exit;
-
         Artisan::call('module:enable '.$this->moduleName());
-
-//        exit;
-//        Artisan::call('module:make-controller IndexController Testz');
-//        Artisan::call('module:make-model Calendar Testz');
+        exit;
     }
 
     private function moduleDirFile($dirName, $directory)
@@ -117,8 +112,9 @@ class ModuleCreator
         $fileInputOptsTpl = self::fgc('Codes/options');
 
         $fieldRow = [];
+        $langFieldRow = [];
 
-        foreach ($this->config['step5']['tcf-db-table-col-editable'] As $key => $col){
+        foreach ($this->config['step5']['tcf-db-table-col-editable'] As $key => $col) {
 
             $fileInputTemp = $fileInputTpl;
             $fileInputAttrTemp = $fileInputAttrTpl;
@@ -134,21 +130,33 @@ class ModuleCreator
             $inputType = $this->config['step5']['tcf-db-table-col-type'][$key];
             $type = $inputType;
 
-            switch ($inputType){
+            switch ($inputType) {
                 case 'Switch':
                     $type = 'Checkbox';
                     $attributes[] = '\'value\' => 1';
                     break;
             }
 
-            $fileInputAttrTemp = self::sp('#TCINPUTATTRS', implode(','.PHP_EOL."\t\t\t\t\t", $attributes), $fileInputAttrTemp);
+            // Language form
+            // FKs set to hidden input
+            if ($this->hasLanguage()) {
+                if (!is_bool(strpos($col, 'tclangtblcol_' )))
+                    if (in_array(str_replace('tclangtblcol_', '', $col), [$this->getLangTablePk(), $this->getLangMainTableFk(), $this->getLangTableFk()])) {
+                        $type = 'Hidden';
+                        $attributes = [];
+                        $fileInputAttrTemp = '';
+                    }
+            }
+
+            if (!empty($fileInputAttrTemp))
+                $fileInputAttrTemp = self::sp('#TCINPUTATTRS', implode(','.PHP_EOL."\t\t\t\t\t", $attributes), $fileInputAttrTemp);
 
             $fileInputTemp = self::sp('#TCINPUTTYPE', $type, $fileInputTemp);
             $fileInputTemp = self::sp('#TCINPUTATTRS', $fileInputAttrTemp, $fileInputTemp);
             $fileInputTemp = self::sp('#TCKEY', $col, $fileInputTemp);
 
             $options = '';
-            switch ($inputType){
+            switch ($inputType) {
                 case 'File':
                     $options = $this->fgc('Codes/file-input');
                     break;
@@ -157,20 +165,38 @@ class ModuleCreator
                     break;
             }
 
+            // Language form
+            // FKs set to hidden input
+            if ($this->hasLanguage()) {
+                if (!is_bool(strpos($col, 'tclangtblcol_' )))
+                    if (in_array(str_replace('tclangtblcol_', '', $col), [$this->getLangTablePk(), $this->getLangMainTableFk(), $this->getLangTableFk()])) {
+                        $fileInputOptsTemp = '';
+                    }
+            }
+
             $fileInputOptsTemp = self::sp('#TCKEY' , $col, $fileInputOptsTemp);
             $fileInputOptsTemp = self::sp('#TCINPUTOPTS' , $options, $fileInputOptsTemp);
             $fileInputTemp = self::sp('#TCINPUTOPTS' , $fileInputOptsTemp, $fileInputTemp);
 
-            $fieldRow[] = $fileInputTemp;
+            // Checking for language type of tool
+            // "tclangtblcol_" this means language inputs included
+            if (is_bool(strpos($col, 'tclangtblcol_')))
+                $fieldRow[] = $fileInputTemp;
+            else
+                $langFieldRow[] = $fileInputTemp;
         }
 
         $fieldRow = implode(','.PHP_EOL, $fieldRow);
         $file = $this->sp('#TCFIELDROW', $fieldRow, $file);
 
-        $langFieldRow = '';
-        if ($this->hasLanguage()) {
-            // @TODO
-        }
+        // Language form
+        if (!empty($langFieldRow)) {
+            $langFieldRow = implode(','.PHP_EOL, $langFieldRow);
+            $langFileFieldRow = $this->fgc('Codes/lang-form-config');
+            $langFieldRow = PHP_EOL.$this->sp('#TCFIELDROW', $langFieldRow, $langFileFieldRow);
+        } else
+            $langFieldRow = '';
+
         $file = $this->sp('#TCLANGFIELDROW', $langFieldRow, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
@@ -221,27 +247,49 @@ class ModuleCreator
 
         $table = $this->config['step3']['tcf-db-table'];
 
-        $entityName = self::makeEntityName($table);
+        $entityName = $this->makeEntityName($table);
         $primaryKey = $this->getTablePK($table);
 
         $fillable = [];
+        $langFillable = [];
+
+        $skipCols[] = $this->getMainTablePk();
+        if ($this->hasLanguage()) {
+            $skipCols = array_merge($skipCols, [
+                $this->getLangTablePk(),
+                $this->getLangMainTableFk(),
+                $this->getLangTableFk()
+            ]);
+        }
 
         foreach ($this->config['step5']['tcf-db-table-col-editable'] As $col)
-            if ($col !== self::getMainTablePk())
-                array_push($fillable, '\''.$col.'\'');
+            if (!in_array($this->sp('tclangtblcol_', '', $col), $skipCols)) {
+                if (is_bool(strpos($col, 'tclangtblcol_')))
+                    array_push($fillable, '\''.$col.'\'');
+                else
+                    array_push($langFillable, '\''.$col.'\'');
+            }
 
         $fillable = implode(', '.PHP_EOL."\t\t", $fillable);
 
+        if (!empty($langFillable))
+            $langFillable = implode(', '.PHP_EOL."\t\t", $langFillable);
 
         $fileInput = [];
+        $langFileInput = [];
         $fileUpload = $this->fgc('Codes/file-upload');
-        foreach ($this->config['step5']['tcf-db-table-col-type'] As $key => $input){
-            $temp = $fileUpload;
+        $langFileUpload = $this->fgc('Codes/file-lang-upload');
+        foreach ($this->config['step5']['tcf-db-table-col-type'] As $key => $input) {
+            $colInput = $this->config['step5']['tcf-db-table-col-editable'][$key];
             if ($input == 'File')
-                $fileInput[] = $this->sp('#TCKEY', $this->config['step5']['tcf-db-table-col-editable'][$key], $temp);
+                if (is_bool(strpos($colInput, 'tclangtblcol_')))
+                    $fileInput[] = $this->sp('#TCKEY', $colInput, $fileUpload);
+                else
+                    $langFileInput[] = $this->sp('#TCKEY', $colInput, $langFileUpload);
         }
 
         $fileInput = ($fileInput) ? implode(PHP_EOL, $fileInput): '';
+        $langFileInput = ($langFileInput) ? implode(PHP_EOL, $langFileInput): '';
 
         $storeFx = $this->fgc('Codes/store-file');
 
@@ -255,19 +303,17 @@ class ModuleCreator
         );
 
         $modelRelation = '';
-        $selectQry = '';
         $selectQryFx = '';
 
         $tblColDisplayFilters = [];
-        foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
-            if (is_bool(strpos($col, 'tclangtblcol_')) && $this->config['step4']['tcf-db-table-col-display'][$key] != 'raw_view'){
+        foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col)
+            if (is_bool(strpos($col, 'tclangtblcol_')) && $this->config['step4']['tcf-db-table-col-display'][$key] != 'raw_view') {
                 $tblColDisplayFilters[] = $this->sp(
                     ['#TCKEY', '#TCCOLDISPLAY'],
                     [$col, $this->config['step4']['tcf-db-table-col-display'][$key]],
                     $this->fgc('/Codes/tbl-col-display-filter')
                 );
             }
-        }
 
         $displayColsTbl = $this->fgc('Codes/tbl-display-filter');
         $tableColsDisplay = ($tblColDisplayFilters) ? $this->sp('#TCTABLECOLS', implode(PHP_EOL, $tblColDisplayFilters), $displayColsTbl) : '';
@@ -275,16 +321,68 @@ class ModuleCreator
         if (!$this->hasLanguage()) {
             $selectQry = $this->fgc('Codes/table-get-list');
         } else {
-            // @TODO
+            $modelRelation = $this->fgc('Codes/lang-relation');
+            $modelRelation = $this->sp('ModelLangName', $this->makeEntityName($this->getLangTable()), $modelRelation);
+
+            $selectQry = $this->fgc('Codes/lang-table-get-list');
+            $selectQry =  $this->sp('ModelLangName', $this->makeEntityName($this->getLangTable()), $selectQry);
+
+            $selectQryFx = $this->fgc('Codes/table-get-list-join');
+            $selectQryFx = $this->sp('ModelLangName', $this->makeEntityName($this->getLangTable()), $selectQryFx);
         }
 
         $file = $this->sp(
-            ['#TCLANGRELATION', '#TCSELECT', '#TCDISPLAYTABLECOLS', '#TCJOINMETHODS'],
-            [$modelRelation, $selectQry, $tableColsDisplay, $selectQryFx],
+            [
+                '#TCLANGRELATION',
+                '#TCSELECT',
+                '#TCDISPLAYTABLECOLS',
+                '#TCJOINMETHODS'
+            ],
+            [
+                $modelRelation,
+                $selectQry,
+                $tableColsDisplay,
+                $selectQryFx
+            ],
             $file
         );
 
         $this->generateModuleFile($entityName.'.php', $curDir, $file);
+
+        if ($this->hasLanguage()) {
+            $file = $this->fgc('Entities/LangModel.php');
+
+            $callStoreFx = ($langFileInput) ? '$this->storeFile($form);' : '';
+            $storeFx = $this->fgc('Codes/store-lang-file');
+            $storeFx = ($langFileInput) ? $this->sp('#TCFILEUPLOAD', $langFileInput, $storeFx) : '';
+
+            $file = $this->sp(
+                [
+                    '#TCTABLE',
+                    '#TCKEYNAME',
+                    '#TCFK1',
+                    '#TCFK2',
+                    '#TCFILLABLE',
+                    '#TCCALLSTOREFILE',
+                    '#TCSTOREFILEFUNCTION'
+                ],
+                [
+                    $this->getLangTable(),
+                    $this->getLangTablePk(),
+                    $this->getLangMainTableFk(),
+                    $this->getLangTableFk(),
+                    $langFillable,
+                    $callStoreFx,
+                    $storeFx
+                ],
+                $file
+            );
+
+            $entityName = $this->makeEntityName($this->getLangTable());
+            $file = $this->sp('ModelLangName', $entityName, $file);
+
+            $this->generateModuleFile($entityName.'.php', $curDir, $file);
+        }
     }
 
     public function setupEvents($curDir)
@@ -334,50 +432,125 @@ class ModuleCreator
         $file = self::fgc('Requests/Request.php');
 
         $table = $this->config['step3']['tcf-db-table'];
-        $entityName = self::makeEntityName($table);
+        $entityName = $this->makeEntityName($table);
 
         $requiredCols = [];
         $requiredColsMsg = [];
 
-        foreach ($this->config['step5']['tcf-db-table-col-required'] As $key => $col)
-            if ($col !== self::getMainTablePk()){
+        $requiredLangCols = [];
+        $requiredLangColsMsg = [];
 
-                if ($this->config['step5']['tcf-db-table-col-type'][$key] !== 'File'){
-                    array_push($requiredCols, '\''.$col.'\' => \'required\'');
+        $skipCols[] = $this->getMainTablePk();
+        if ($this->hasLanguage()) {
+            $skipCols = array_merge($skipCols, [
+                $this->getLangTablePk(),
+                $this->getLangMainTableFk(),
+                $this->getLangTableFk()
+            ]);
+        }
+
+        foreach ($this->config['step5']['tcf-db-table-col-required'] As $key => $col)
+            if (!in_array($this->sp('tclangtblcol_', '', $col), $skipCols)) {
+                if ($this->config['step5']['tcf-db-table-col-type'][array_search($col, $this->config['step5']['tcf-db-table-col-editable'])] !== 'File') {
+
+                    if (is_bool(strpos($col, 'tclangtblcol_')))
+                        array_push($requiredCols, '\''.$col.'\' => \'required\'');
+                    else
+                        array_push($requiredLangCols, '\''.$col.'\' => \'required\'');
+
                 }
 
-                array_push($requiredColsMsg, '\''.$col.'.required\' => __(\'moduletpl::messages.input_required\')');
+                if (is_bool(strpos($col, 'tclangtblcol_')))
+                    array_push($requiredColsMsg, '\''.$col.'.required\' => __(\'moduletpl::messages.input_required\')');
+                else
+                    array_push($requiredLangColsMsg, '\''.$col.'.required\' => __(\'moduletpl::messages.input_required\')');
             }
 
-        $requiredFileInput = [];
+        $fileInput = [];
+        $langFileInput = [];
 
         foreach ($this->config['step5']['tcf-db-table-col-editable'] As $key => $col)
-            if ($this->config['step5']['tcf-db-table-col-type'][$key] == 'File'){
+            if (!in_array($this->sp('tclangtblcol_', '', $col), $skipCols)) {
+                if ($this->config['step5']['tcf-db-table-col-type'][$key] == 'File') {
 
-                if (in_array($col, $this->config['step5']['tcf-db-table-col-required'])){
-                    $requiredFileInput[] = '$rules[\''. $col .'\'] = (request()->hasFile(\''. $col .'\')  || is_null($hasID)) ? $withRequired : $notRequired;';
-                }else{
-                    array_push($requiredCols, '\''.$col.'\' => \'file|image|max:3000\'');
+                    if (in_array($col, $this->config['step5']['tcf-db-table-col-required'])) {
+                        if (is_bool(strpos($col, 'tclangtblcol_')))
+                            $fileInput[] = '$rules = $this->fileRules($rules, \'' . $col . '\');';
+                        else
+                            $langFileInput[] = '$rules = $this->fileRules($rules, $form, \'' . $col . '\');';
+                    } else {
+                        if (is_bool(strpos($col, 'tclangtblcol_')))
+                            array_push($fileInput, '$rules = $this->fileRules($rules, \'' . $col . '\', false);');
+                        else
+                            array_push($langFileInput, '$rules = $this->fileRules($rules, $form, \'' . $col . '\', false);');
+                    }
+
+                    if (is_bool(strpos($col, 'tclangtblcol_'))) {
+                        array_push($requiredColsMsg, '\'' . $col . '.max\' => __(\'moduletpl::messages.max_upload\')');
+                    } else {
+                        array_push($requiredLangColsMsg, '\'' . $col . '.max\' => __(\'moduletpl::messages.max_upload\')');
+                    }
                 }
-
-                array_push($requiredColsMsg, '\''.$col.'.max\' => __(\'moduletpl::messages.file_max_size\')');
-                array_push($requiredColsMsg, '\''.$col.'.uploaded\' => __(\'moduletpl::messages.failed_upload\')');
             }
 
-        $fileUploadRequired = $this->fgc('Codes/file-upload-rules');
-
-        $fileUploadRequired = (!empty($requiredFileInput)) ? $fileUploadRequired.PHP_EOL."\t\t".implode("\t\t".PHP_EOL, $requiredFileInput) : '';
+        $fileUpload = (!empty($fileInput)) ? implode(PHP_EOL."\t\t", $fileInput) : '';
+        $langFileUpload = (!empty($langFileInput)) ? implode(PHP_EOL."\t\t", $langFileInput) : '';
 
         $requiredCols = implode(', '.PHP_EOL."\t\t\t", $requiredCols);
         $requiredColsMsg = implode(', '.PHP_EOL."\t\t\t", $requiredColsMsg);
 
+        $requiredLangCols = (!empty($requiredLangCols)) ? implode(', '.PHP_EOL."\t\t\t", $requiredLangCols) : '';
+        $requiredLangColsMsg = (!empty($requiredLangCols)) ? implode(', '.PHP_EOL."\t\t\t", $requiredLangColsMsg) : '';
+
+        $fileInputRules = (!empty($fileUpload)) ? $this->fgc('Codes/file-upload-rules') : '';
+
         $file = self::sp(
-            ['ModelName', '#TCCOLSRULES', '#TCCOLSMGS', '#TCREQUIREDFILE'],
-            [$entityName, $requiredCols, $requiredColsMsg, $fileUploadRequired],
+            [
+                'ModelName',
+                '#TCCOLSRULES',
+                '#TCCOLSMGS',
+                '#TCREQUIREDFILE',
+                '#TCFILERULESFX'
+            ],
+            [
+                $entityName,
+                $requiredCols,
+                $requiredColsMsg,
+                $fileUpload,
+                $fileInputRules
+            ],
             $file
         );
 
         $this->generateModuleFile($entityName.'Request.php', $curDir, $file);
+
+        if ($this->hasLanguage()) {
+            $file = $this->fgc('Requests/LangRequest.php');
+
+            $entityName = $this->makeEntityName($this->getLangTable());
+
+            $fileInputRules = (!empty($fileUpload)) ? $this->fgc('Codes/file-lang-upload-rules') : '';
+
+            $file = self::sp(
+                [
+                    'ModelName',
+                    '#TCCOLSRULES',
+                    '#TCCOLSMGS',
+                    '#TCREQUIREDFILE',
+                    '#TCFILERULESFX'
+                ],
+                [
+                    $entityName,
+                    $requiredLangCols,
+                    $requiredLangColsMsg,
+                    $langFileUpload,
+                    $fileInputRules
+                ],
+                $file
+            );
+
+            $this->generateModuleFile($entityName.'Request.php', $curDir, $file);
+        }
     }
 
     private function setupListeners($curDir)
@@ -390,20 +563,22 @@ class ModuleCreator
 
         $langRequest = '';
         if ($this->hasLanguage()) {
-            // @TODO
+            $langRequestName = $this->makeEntityName($this->getLangTable());
+            $langRequest = PHP_EOL."\t\t".'\Modules\ModuleTpl\Http\Requests\\'.$langRequestName. 'Request::class,';
         }
+
         $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
         $file = self::sp('ModelName', $entityName, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
-
 
         $fileName = 'DeleteItemRequest.php';
         $file = self::fgc('Listeners/'.$fileName);
 
         $langRequest = '';
         if ($this->hasLanguage()) {
-            // @TODO
+            $langRequestName = $this->makeEntityName($this->getLangTable());
+            $langRequest = PHP_EOL."\t\t".'\Modules\ModuleTpl\Http\Requests\\'.$langRequestName. 'Request::class,';
         }
         $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
         $file = self::sp('ModelName', $entityName, $file);
@@ -440,7 +615,7 @@ class ModuleCreator
             app()->setLocale($tempLocale);
 
             foreach ($commonTransTpl As $cText)
-                $commonTranslations[$lang->lang_locale][$cText] = Lang::get('melisLaravel::messages.'.$cText);
+                $commonTranslations[$lang->lang_locale][$cText] = __('melisLaravel::messages.'.$cText);
 
             if (!empty($this->config['step6'][$lang->lang_locale])){
                 foreach ($this->config['step6'][$lang->lang_locale]['pri_tbl'] As $col => $val){
@@ -570,7 +745,7 @@ class ModuleCreator
 
         $langFromData = '';
         if ($this->hasLanguage()) {
-            #TODO
+            $langFromData = $this->fgc('Codes/lang-formdata-js');
         }
         $file = $this->sp('#TCLANGDATAFORM', $langFromData, $file);
 
@@ -600,8 +775,8 @@ class ModuleCreator
         $fileContent = str_replace('moduleTpl', lcfirst($moduleName), $fileContent);
         $fileContent = str_replace('moduletpl', strtolower($moduleName), $fileContent);
 
-//        if ($this->hasLanguage())
-//            $fileContent = $this->sp('tclangtblcol_', '', $fileContent);
+        // Only for Language tool that file contain "tclangtblcol_"
+        $fileContent = $this->sp('tclangtblcol_', '', $fileContent);
 
         $targetFile = $targetDir.'/'.$fileName;
         if (!file_exists($targetFile)){
@@ -631,6 +806,32 @@ class ModuleCreator
                 return $col->Field;
 
         return null;
+    }
+
+    function getLangTable()
+    {
+        return $this->config['step3']['tcf-db-table-language-tbl'];
+    }
+
+    function getLangTablePk()
+    {
+        $selectedTbl = $this->describeTable($this->config['step3']['tcf-db-table-language-tbl']);
+
+        foreach ($selectedTbl As $col)
+            if ($col->Key == 'PRI' && $col->Extra == 'auto_increment')
+                return $col->Field;
+
+        return null;
+    }
+
+    function getLangMainTableFk()
+    {
+        return $this->config['step3']['tcf-db-table-language-pri-fk'];
+    }
+
+    function getLangTableFk()
+    {
+        return $this->config['step3']['tcf-db-table-language-lang-fk'];
     }
 
     function describeTable($table)
@@ -707,8 +908,6 @@ class ModuleCreator
     {
         return $this->config['step1']['tcf-tool-edit-type'] == 'modal' ? true : false;
     }
-
-
 
     private function hasLanguage()
     {
