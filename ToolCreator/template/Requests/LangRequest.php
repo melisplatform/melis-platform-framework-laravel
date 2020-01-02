@@ -85,7 +85,7 @@ class ModelNameRequest extends FormRequest
                         $formErrors[$form][$key]['err_'.++$ek] = $er;
 
                         // Not required input error occurred indicator
-                        if (is_bool(strpos($er,'empty')))
+                        if ($er == __('moduletpl::messages.input_required'))
                             $notRequiredErr[$form] = true;
                     }
                 }

@@ -66,11 +66,15 @@ class ModuleCreator extends Controller
 
         $modGen($moduleStructure, self::MODULE_DIR, $modGen);
 
+        // Module Json
         $this->moduleJson();
 
-//        $this->setupJs();
+        // Adding Js to zend module
+        $this->setupJs();
+
+        // Activating new generated module in laravel using Artisan
         Artisan::call('module:enable '.$this->moduleName());
-        exit;
+        return;
     }
 
     private function moduleDirFile($dirName, $directory)
