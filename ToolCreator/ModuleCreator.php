@@ -310,7 +310,7 @@ class ModuleCreator extends Controller
 
         $tblColDisplayFilters = [];
         foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col)
-            if (is_bool(strpos($col, 'tclangtblcol_')) && $this->config['step4']['tcf-db-table-col-display'][$key] != 'raw_view') {
+            if ($this->config['step4']['tcf-db-table-col-display'][$key] != 'raw_view') {
                 $tblColDisplayFilters[] = $this->sp(
                     ['#TCKEY', '#TCCOLDISPLAY'],
                     [$col, $this->config['step4']['tcf-db-table-col-display'][$key]],

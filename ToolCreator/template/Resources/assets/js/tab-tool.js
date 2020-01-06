@@ -11,7 +11,7 @@ $(function(){
         var tabTitle = translations.common_add;
         var id = $(this).parents("tr").attr('id');
         if (typeof id !== "undefined"){
-            tabTitle = translations.tr_moduletpl_title+" / "+id
+            tabTitle = translations.tr_moduletpl_title+" / "+id;
         } else { id = 0; }
 
         // Opening tab form for add/update

@@ -25,7 +25,7 @@ $(function(){
     $body.on("hidden.bs.modal", "#id_moduletpl_generic_modal_tool_container", function () {
         curReq.abort();
         $("#id_moduletpl_generic_modal_tool_container .modal-dialog")
-            .html('<div id="loadingZone" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
+            .html(melisHelper.loadingHtml());
     });
 
 
@@ -95,7 +95,7 @@ $(function(){
 
     $body.on("click", ".moduletpl-delete-action", function(){
 
-        var id = $(this).parents("tr").attr('id');
+        var albumId = $(this).parents("tr").attr('id');
 
         melisCoreTool.confirm(
             translations.tr_meliscore_common_yes,
@@ -103,11 +103,10 @@ $(function(){
             translations.delete_item,
             translations.delete_item_message,
             function () {
-                $.post('/melis/moduletpl/delete/'+id).done(function(res){
+                $.post('/melis/moduletpl/delete/'+albumId).done(function(res){
 
                     var data = JSON.parse(res);
 
-                    // Reload zone
                     $(".moduletpl-refresh-content").trigger("click");
                     // Pop-up Notification
                     melisHelper.melisOkNotification(data.title, data.message);

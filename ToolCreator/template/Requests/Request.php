@@ -52,7 +52,7 @@ class ModelNameRequest extends FormRequest
     public function validate(SaveFormRequest $event)
     {
         $validator = Validator::make(
-            array_merge(request()->input(), request()->allFiles()),
+            request()->all(),
             $this->rules(),
             $this->messages()
         );
