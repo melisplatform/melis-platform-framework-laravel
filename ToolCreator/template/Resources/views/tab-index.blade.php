@@ -11,12 +11,4 @@
 </div>
 <div class="innerAll spacing-x2">
     {!! DataTable::createTable(config('moduletpl.table')) !!}
-
-    <div class="modal fade" id="id_moduletpl_generic_modal_tool_container">
-        <div class="modal-dialog" role="document">
-            <div id="loadingZone" class="overlay-loader">
-                <img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12">
-            </div>
-        </div>
-    </div>
 </div>

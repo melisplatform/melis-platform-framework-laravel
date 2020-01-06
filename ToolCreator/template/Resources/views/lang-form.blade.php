@@ -5,12 +5,12 @@
                 <div class="widget-head">
                     <ul class="nav nav-tabs">
                         <li class="active">
-                            <a href="#id-moduletpl-tool-modal-main" class="glyphicons {{ $id ? 'pencil' : 'plus' }}" data-toggle="tab" aria-expanded="true"><i></i>
+                            <a href="#moduletpl-tool-modal-main" class="glyphicons {{ $id ? 'pencil' : 'plus' }}" data-toggle="tab" aria-expanded="true"><i></i>
                                 {{ __('moduletpl::messages.properties') }}
                             </a>
                         </li>
                         <li>
-                            <a href="#id-moduletpl-tool-modal-language" class="glyphicons font" data-toggle="tab" aria-expanded="true"><i></i>
+                            <a href="#moduletpl-tool-modal-language" class="glyphicons font" data-toggle="tab" aria-expanded="true"><i></i>
                                 {{ __('moduletpl::messages.languages') }}
                             </a>
                         </li>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="widget-body innerAll inner-2x">
                     <div class="tab-content moduletpl-form-container">
-                        <div class="tab-pane active" id="id-moduletpl-tool-modal-main">
+                        <div class="tab-pane active" id="moduletpl-tool-modal-main">
                             <div class="row">
                                 <div class="col-md-12">
                                     @php
@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="id-moduletpl-tool-modal-language">
+                        <div class="tab-pane" id="moduletpl-tool-modal-language">
                             <div class="row">
 
                                 <div class="col-xs-12 col-md-3">
@@ -46,7 +46,14 @@
                                             @foreach($langs As $key => $lang)
                                                 <li class="{{ ($key) ? '':'active' }}">
                                                     <a class="clearfix" data-toggle="tab" href="#moduletpl-text-translation-{{ $lang['lang_cms_locale'] }}" aria-expanded="false">
-                                                        <span>{{ $lang['lang_cms_name'] }}</span>
+                                                        @php
+                                                            $langLabel = '<span>'. $lang['lang_cms_name'] .'</span>';
+                                                            $moduleSvc = app('ZendServiceManager')->get('ModulesService');
+                                                            if (file_exists($moduleSvc->getModulePath('MelisCms').'/public/images/lang-flags/'.$lang['lang_cms_locale'].'.png')){
+                                                                $langLabel .= '<span class="pull-right"><img src="/MelisCms/images/lang-flags/'.$lang['lang_cms_locale'].'.png"></span>';
+                                                            }
+                                                        @endphp
+                                                        {!! $langLabel !!}
                                                     </a>
                                                 </li>
                                             @endforeach

@@ -5,7 +5,7 @@
                 <div class="widget-head">
                     <ul class="nav nav-tabs">
                         <li class="active">
-                            <a href="#id-moduletpl-tool-modal" class="glyphicons {{ $id ? 'pencil' : 'plus' }}" data-toggle="tab" aria-expanded="true"><i></i>
+                            <a href="#moduletpl-tool-modal" class="glyphicons {{ $id ? 'pencil' : 'plus' }}" data-toggle="tab" aria-expanded="true"><i></i>
                                 {{ __('moduletpl::messages.properties') }}
                             </a>
                         </li>
@@ -13,7 +13,7 @@
                 </div>
                 <div class="widget-body innerAll inner-2x">
                     <div class="tab-content moduletpl-form-container">
-                        <div class="tab-pane active" id="id-moduletpl-tool-modal">
+                        <div class="tab-pane active" id="moduletpl-tool-modal">
                             <div class="row">
                                 <div class="col-md-12">
                                     @php

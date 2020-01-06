@@ -6,7 +6,6 @@ use function GuzzleHttp\Psr7\str;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 use Zend\Session\Container;
 
 class ModuleCreator extends Controller
@@ -408,20 +407,12 @@ class ModuleCreator extends Controller
         $table = $this->config['step3']['tcf-db-table'];
         $entityName = self::makeEntityName($table);
 
-        // #TCTOOLTYPEEDTION
         $toolForm = '';
         if ($this->isDbTool()) {
 
-            if ($this->isModalTypeTool()) {
-
-                $toolForm = $this->fgc('Codes/form-modal');
-
-                $langQuery = ($this->hasLanguage()) ? $this->fgc('Codes/cms-lang-query') : '';
-
-                $toolForm = $this->sp('#TCLANGCMS', $langQuery, $toolForm);
-            } else {
-                // @TODO for tabulation
-            }
+            $toolForm = $this->fgc('Codes/form-function');
+            $langQuery = ($this->hasLanguage()) ? $this->fgc('Codes/cms-lang-query') : '';
+            $toolForm = $this->sp('#TCLANGCMS', $langQuery, $toolForm);
         }
 
         $file = $this->sp('#TCTOOLTYPEEDTION', $toolForm, $file);
@@ -708,17 +699,25 @@ class ModuleCreator extends Controller
 
     private function setupViews($curDir)
     {
-        if (!$this->hasLanguage())
-            $fileName = 'form.blade.php';
-        else
-            $fileName = 'lang-form.blade.php';
+        $fileName = 'form.blade.php';
+        if (!$this->hasLanguage() && $this->isModalTypeTool())
+                $fileName = 'tab-'. $fileName;
+        else {
+            if ($this->isModalTypeTool())
+                $fileName = 'lang-'.$fileName;
+            else
+                $fileName = 'tab-lang-'.$fileName;
+        }
 
         $file = self::fgc('Resources/views/'.$fileName);
-        $this->generateModuleFile(str_replace('lang-', '', $fileName), $curDir, $file);
+        $this->generateModuleFile('form.blade.php', $curDir, $file);
 
         $fileName = 'index.blade.php';
+        if (!$this->isModalTypeTool())
+            $fileName = 'tab-'. $fileName;
+
         $file = self::fgc('Resources/views/'.$fileName);
-        $this->generateModuleFile($fileName, $curDir, $file);
+        $this->generateModuleFile('index.blade.php', $curDir, $file);
     }
 
     private function setupRoutes($curDir)
@@ -730,10 +729,9 @@ class ModuleCreator extends Controller
         $fileName = 'web.php';
         $file = self::fgc('Routes/'.$fileName);
 
-        if ($this->isModalTypeTool()) {
+        $route = '';
+        if ($this->isDbTool()) {
             $route = 'Route::get(\'/form/{id?}\', \'IndexController@form\');';
-        } else {
-            $route = 'Route::get(\'/tool-properties/{id?}\', \'IndexController@properties\');';
         }
         $file = $this->sp('#TCTOOLTYPE', $route, $file);
         $this->generateModuleFile($fileName, $curDir, $file);
@@ -742,14 +740,22 @@ class ModuleCreator extends Controller
     private function setupJs()
     {
         $fileName = 'tool.js';
-        $file = self::fgc('Resources/assets/js/'.$fileName);
+        $temp = $fileName;
+        if (!$this->isModalTypeTool())
+            $temp = 'tab-'.$fileName;
+
+        $file = self::fgc('Resources/assets/js/'.$temp);
 
         $zendModule = __DIR__ .'/../../../../module/';
         $moduleAssetsDir = $zendModule.DIRECTORY_SEPARATOR.$this->moduleName().DIRECTORY_SEPARATOR.'public/js';
 
         $langFromData = '';
         if ($this->hasLanguage()) {
-            $langFromData = $this->fgc('Codes/lang-formdata-js');
+            $langFromData ='Codes/lang-formdata-js';
+            if (!$this->isModalTypeTool())
+                $langFromData = 'Codes/tab-lang-formdata-js';
+
+            $langFromData = $this->fgc($langFromData);
         }
         $file = $this->sp('#TCLANGDATAFORM', $langFromData, $file);
 

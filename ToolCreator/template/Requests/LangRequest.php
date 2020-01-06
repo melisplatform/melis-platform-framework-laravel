@@ -130,8 +130,8 @@ class ModelNameRequest extends FormRequest
 
                 foreach ($form As $field => $val) {
                     if (in_array($field, $model->getFillable())) {
-                        if ((empty($val) && !empty($form[$model::MAIN_FOREIGN_KEY])) ||
-                            (!empty($val) && empty($form[$model::MAIN_FOREIGN_KEY])) || !$formsHasData || isset($notRequiredErr[$key]))
+                        if ((empty($val) && !empty($form[$model::MAIN_FOREIGN_KEY]) && isset($notRequiredErr[$key])) ||
+                            (!empty($val) && empty($form[$model::MAIN_FOREIGN_KEY]) && isset($notRequiredErr[$key])) || !$formsHasData)
                             $skipErr = false;
                     }
                 }

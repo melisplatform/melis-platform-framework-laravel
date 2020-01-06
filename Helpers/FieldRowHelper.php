@@ -42,11 +42,11 @@ class FieldRowHelper
                 if (!empty($defaultData[$name]))
                     $element->setValue($defaultData[$name]);
 
-            if (!empty($data))
-                $element->setValue($data->$name);
-
             $element->setOptions($finalOptions);
             $element->setAttributes($finaleAttributes);
+
+            if (isset($data->$name))
+                $element->setValue($data->$name);
 
             $viewHelper = app('ZendServiceManager')->get('ViewHelperManager');
             $fieldRow = $viewHelper->get('MelisFieldRow');

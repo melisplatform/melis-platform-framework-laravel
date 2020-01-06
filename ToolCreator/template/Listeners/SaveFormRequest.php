@@ -40,7 +40,10 @@ class SaveFormRequest
         $validated = (empty($errors)) ? true : false;
 
         $result = array_merge(
-            ['success' => $validated],
+            [
+                'success' => $validated,
+                'id' => $event->id
+            ],
             $this->logAction($event, $validated)
         );
 
