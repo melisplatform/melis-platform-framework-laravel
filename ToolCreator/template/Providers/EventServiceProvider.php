@@ -16,11 +16,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        SaveFormEvent::class => [
-            SaveFormRequest::class
-        ],
-        DeleteItemEvent::class => [
-            DeleteItemRequest::class
-        ],
+        #TCEVENTLISTENERS
     ];
 }

@@ -20,17 +20,22 @@ class ModuleCreator extends Controller
         $container = new Container('melistoolcreator');
         $this->config = $container['melis-toolcreator'];
 
-        echo '<style> body{background: #1f1f1f; color: #BCD42A; font-family: monospace;}</style>';
-        echo '<pre>';
+//        echo '<style> body{background: #1f1f1f; color: #BCD42A; font-family: monospace;}</style>';
+//        echo '<pre>';
     }
 
     public function __destruct()
     {
-        echo '</pre>';
+//        echo '</pre>';
     }
 
     public function run()
     {
+
+        if ((!$this->isDbTool() && !$this->isBlankTool()) ||
+            (!$this->isFrameworkTool() || !$this->isLaravelFrameworkTool()))
+            return;
+
         $moduleStructure = [
             $this->moduleName() => [
                 'Config',
@@ -88,14 +93,14 @@ class ModuleCreator extends Controller
         if (method_exists($this, $setupFx))
             $this->$setupFx($curDir);
 
-        echo $dirName.'<br>';
+//        echo $dirName.'<br>';
     }
 
     private function setupConfig($curDir)
     {
         // Module Config
         $fileName = 'config.php';
-        $file = self::fgc('Config/'.$fileName);
+        $file = $this->fgc('Config/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
 
         // Module Form Config
@@ -108,11 +113,18 @@ class ModuleCreator extends Controller
     private function setupFormConfig($curDir)
     {
         $fileName = 'form.config.php';
-        $file = self::fgc('Config/'.$fileName);
+        $file = $this->fgc('Config/'.$fileName);
 
-        $fileInputTpl = self::fgc('Codes/input');
-        $fileInputAttrTpl = self::fgc('Codes/attributes');
-        $fileInputOptsTpl = self::fgc('Codes/options');
+        if ($this->isBlankTool()) {
+            $file = $this->sp('#TCFIELDROW', '', $file);
+            $file = $this->sp('#TCLANGFIELDROW', '', $file);
+            $this->generateModuleFile($fileName, $curDir, $file);
+            return;
+        }
+
+        $fileInputTpl = $this->fgc('Codes/input');
+        $fileInputAttrTpl = $this->fgc('Codes/attributes');
+        $fileInputOptsTpl = $this->fgc('Codes/options');
 
         $fieldRow = [];
         $langFieldRow = [];
@@ -152,11 +164,11 @@ class ModuleCreator extends Controller
             }
 
             if (!empty($fileInputAttrTemp))
-                $fileInputAttrTemp = self::sp('#TCINPUTATTRS', implode(','.PHP_EOL."\t\t\t\t\t", $attributes), $fileInputAttrTemp);
+                $fileInputAttrTemp = $this->sp('#TCINPUTATTRS', implode(','.PHP_EOL."\t\t\t\t\t", $attributes), $fileInputAttrTemp);
 
-            $fileInputTemp = self::sp('#TCINPUTTYPE', $type, $fileInputTemp);
-            $fileInputTemp = self::sp('#TCINPUTATTRS', $fileInputAttrTemp, $fileInputTemp);
-            $fileInputTemp = self::sp('#TCKEY', $col, $fileInputTemp);
+            $fileInputTemp = $this->sp('#TCINPUTTYPE', $type, $fileInputTemp);
+            $fileInputTemp = $this->sp('#TCINPUTATTRS', $fileInputAttrTemp, $fileInputTemp);
+            $fileInputTemp = $this->sp('#TCKEY', $col, $fileInputTemp);
 
             $options = '';
             switch ($inputType) {
@@ -177,9 +189,9 @@ class ModuleCreator extends Controller
                     }
             }
 
-            $fileInputOptsTemp = self::sp('#TCKEY' , $col, $fileInputOptsTemp);
-            $fileInputOptsTemp = self::sp('#TCINPUTOPTS' , $options, $fileInputOptsTemp);
-            $fileInputTemp = self::sp('#TCINPUTOPTS' , $fileInputOptsTemp, $fileInputTemp);
+            $fileInputOptsTemp = $this->sp('#TCKEY' , $col, $fileInputOptsTemp);
+            $fileInputOptsTemp = $this->sp('#TCINPUTOPTS' , $options, $fileInputOptsTemp);
+            $fileInputTemp = $this->sp('#TCINPUTOPTS' , $fileInputOptsTemp, $fileInputTemp);
 
             // Checking for language type of tool
             // "tclangtblcol_" this means language inputs included
@@ -208,9 +220,17 @@ class ModuleCreator extends Controller
     private function setupTableConfig($curDir)
     {
         $fileName = 'table.config.php';
-        $file = self::fgc('Config/'.$fileName);
+        $file = $this->fgc('Config/'.$fileName);
 
-        $tblCols = self::fgc('Codes/tbl-cols');
+        if ($this->isBlankTool()) {
+            $file = $this->sp('#TABLECOLUMNS', '', $file);
+            $file = $this->sp('#TABLESEARCHBLECOLUMNS', '', $file);
+            $this->generateModuleFile($fileName, $curDir, $file);
+            return;
+        }
+
+
+        $tblCols = $this->fgc('Codes/tbl-cols');
 
         // Table columns
         $tblColumns = [];
@@ -222,7 +242,7 @@ class ModuleCreator extends Controller
         foreach ($this->config['step4']['tcf-db-table-cols'] As $key => $col){
 
             // Primary column use to update and delete raw entry
-            $priCol = ($col == self::getMainTablePk()) ? 'DT_RowId' : $col;
+            $priCol = ($col == $this->getMainTablePk()) ? 'DT_RowId' : $col;
 
             $strColTmp = $this->sp('#TCKEYCOL', $priCol, $tblCols);
             $strColTmp = $this->sp('#TCKEY', $col, $strColTmp);
@@ -246,7 +266,12 @@ class ModuleCreator extends Controller
 
     private function setupEntities($curDir)
     {
-        $file = self::fgc('Entities/Model.php');
+        if ($this->isBlankTool()) {
+            $this->generateGitKeep($curDir);
+            return;
+        }
+
+        $file = $this->fgc('Entities/Model.php');
 
         $table = $this->config['step3']['tcf-db-table'];
 
@@ -299,7 +324,7 @@ class ModuleCreator extends Controller
         $callStoreFx = ($fileInput) ? '$this->storeFile();' : '';
         $storeFx = ($fileInput) ? $this->sp('#TCFILEUPLOAD', $fileInput, $storeFx) : '';
 
-        $file = self::sp(
+        $file = $this->sp(
             ['ModelName', '#TCTABLE', '#TCKEYNAME', '#TCFILLABLE', '#TCCALLSTOREFILE', '#TCSTOREFILEFUNCTION'],
             [$entityName, $table, $primaryKey, $fillable, $callStoreFx, $storeFx],
             $file
@@ -390,22 +415,36 @@ class ModuleCreator extends Controller
 
     public function setupEvents($curDir)
     {
+        if ($this->isBlankTool()) {
+            $this->generateGitKeep($curDir);
+            return;
+        }
+
         $fileName = 'SaveFormEvent.php';
-        $file = self::fgc('Events/'.$fileName);
+        $file = $this->fgc('Events/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
 
         $fileName = 'DeleteItemEvent.php';
-        $file = self::fgc('Events/'.$fileName);
+        $file = $this->fgc('Events/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
     private function setupControllers($curDir)
     {
+        if ($this->isBlankTool()) {
+
+            $fileName = 'IndexController.php';
+            $file = $this->fgc('Controllers/'.str_replace('Index', 'Blank', $fileName));
+            $this->generateModuleFile($fileName, $curDir, $file);
+
+            return;
+        }
+
         $fileName = 'IndexController.php';
-        $file = self::fgc('Controllers/'.$fileName);
+        $file = $this->fgc('Controllers/'.$fileName);
 
         $table = $this->config['step3']['tcf-db-table'];
-        $entityName = self::makeEntityName($table);
+        $entityName = $this->makeEntityName($table);
 
         $toolForm = '';
         if ($this->isDbTool()) {
@@ -417,14 +456,19 @@ class ModuleCreator extends Controller
 
         $file = $this->sp('#TCTOOLTYPEEDTION', $toolForm, $file);
 
-        $file = self::sp('ModelName', $entityName, $file);
+        $file = $this->sp('ModelName', $entityName, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
     }
 
     private function setupRequests($curDir)
     {
-        $file = self::fgc('Requests/Request.php');
+        if ($this->isBlankTool()) {
+            $this->generateGitKeep($curDir);
+            return;
+        }
+
+        $file = $this->fgc('Requests/Request.php');
 
         $table = $this->config['step3']['tcf-db-table'];
         $entityName = $this->makeEntityName($table);
@@ -499,7 +543,7 @@ class ModuleCreator extends Controller
 
         $fileInputRules = (!empty($fileUpload)) ? $this->fgc('Codes/file-upload-rules') : '';
 
-        $file = self::sp(
+        $file = $this->sp(
             [
                 'ModelName',
                 '#TCCOLSRULES',
@@ -526,7 +570,7 @@ class ModuleCreator extends Controller
 
             $fileInputRules = (!empty($fileUpload)) ? $this->fgc('Codes/file-lang-upload-rules') : '';
 
-            $file = self::sp(
+            $file = $this->sp(
                 [
                     'ModelName',
                     '#TCCOLSRULES',
@@ -550,11 +594,16 @@ class ModuleCreator extends Controller
 
     private function setupListeners($curDir)
     {
+        if ($this->isBlankTool()) {
+            $this->generateGitKeep($curDir);
+            return;
+        }
+
         $table = $this->config['step3']['tcf-db-table'];
-        $entityName = self::makeEntityName($table);
+        $entityName = $this->makeEntityName($table);
 
         $fileName = 'SaveFormRequest.php';
-        $file = self::fgc('Listeners/'.$fileName);
+        $file = $this->fgc('Listeners/'.$fileName);
 
         $langRequest = '';
         if ($this->hasLanguage()) {
@@ -562,21 +611,21 @@ class ModuleCreator extends Controller
             $langRequest = PHP_EOL."\t\t".'\Modules\ModuleTpl\Http\Requests\\'.$langRequestName. 'Request::class,';
         }
 
-        $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
-        $file = self::sp('ModelName', $entityName, $file);
+        $file = $this->sp('#TCLANGREQUEST', $langRequest, $file);
+        $file = $this->sp('ModelName', $entityName, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
 
         $fileName = 'DeleteItemRequest.php';
-        $file = self::fgc('Listeners/'.$fileName);
+        $file = $this->fgc('Listeners/'.$fileName);
 
         $langRequest = '';
         if ($this->hasLanguage()) {
             $langRequestName = $this->makeEntityName($this->getLangTable());
             $langRequest = PHP_EOL."\t\t".'\Modules\ModuleTpl\Http\Requests\\'.$langRequestName. 'Request::class,';
         }
-        $file = self::sp('#TCLANGREQUEST', $langRequest, $file);
-        $file = self::sp('ModelName', $entityName, $file);
+        $file = $this->sp('#TCLANGREQUEST', $langRequest, $file);
+        $file = $this->sp('ModelName', $entityName, $file);
 
         $this->generateModuleFile($fileName, $curDir, $file);
     }
@@ -584,16 +633,25 @@ class ModuleCreator extends Controller
     private function setupProviders($curDir)
     {
         $fileName = 'ModuleServiceProvider.php';
-        $file = self::fgc('Providers/'.$fileName);
+        $file = $this->fgc('Providers/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
 
         $fileName = 'RouteServiceProvider.php';
-        $file = self::fgc('Providers/'.$fileName);
+        $file = $this->fgc('Providers/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
 
+
         $fileName = 'EventServiceProvider.php';
-        $file = self::fgc('Providers/'.$fileName);
+        $file = $this->fgc('Providers/'.$fileName);
+
+        $events = '';
+        if (!$this->isBlankTool()) {
+            $events = $this->fgc('Codes/event-listeners');
+        }
+        $file = $this->sp('#TCEVENTLISTENERS', $events, $file);
+
         $this->generateModuleFile($fileName, $curDir, $file);
+
     }
 
     private function setupLang($curDir)
@@ -601,38 +659,46 @@ class ModuleCreator extends Controller
         $coreLang = DB::table('melis_core_lang')->get();
         $commonTransTpl = require __DIR__.'/template/Resources/lang/messages.php';
 
-        $currentLocale = app()->getLocale();
 
-        // Common translation
-        $commonTranslations = [];
-        foreach ($coreLang As $lang){
-            $tempLocale = explode('_', $lang->lang_locale)[0];
-            app()->setLocale($tempLocale);
+        // Merging texts from steps forms
+        $stepTexts = $this->config['step2'];
 
-            foreach ($commonTransTpl As $cText)
-                $commonTranslations[$lang->lang_locale][$cText] = __('melisLaravel::messages.'.$cText);
+        if (!$this->isBlankTool()) {
 
-            if (!empty($this->config['step6'][$lang->lang_locale])){
-                foreach ($this->config['step6'][$lang->lang_locale]['pri_tbl'] As $col => $val){
-                    if (!strpos($col, 'tcinputdesc'))
-                        $col .= '_text';
-                    $commonTranslations[$lang->lang_locale][$col] = $val;
-                }
+            // Common translation
+            $commonTranslations = [];
 
-                if (!empty($this->config['step6'][$lang->lang_locale]['lang_tbl'])){
-                    foreach ($this->config['step6'][$lang->lang_locale]['lang_tbl'] As $col => $val){
+            $currentLocale = app()->getLocale();
+
+            foreach ($coreLang As $lang) {
+                $tempLocale = explode('_', $lang->lang_locale)[0];
+                app()->setLocale($tempLocale);
+
+                foreach ($commonTransTpl As $cText)
+                    $commonTranslations[$lang->lang_locale][$cText] = __('melisLaravel::messages.'.$cText);
+
+                if (!empty($this->config['step6'][$lang->lang_locale])){
+                    foreach ($this->config['step6'][$lang->lang_locale]['pri_tbl'] As $col => $val){
                         if (!strpos($col, 'tcinputdesc'))
                             $col .= '_text';
                         $commonTranslations[$lang->lang_locale][$col] = $val;
                     }
+
+                    if (!empty($this->config['step6'][$lang->lang_locale]['lang_tbl'])){
+                        foreach ($this->config['step6'][$lang->lang_locale]['lang_tbl'] As $col => $val){
+                            if (!strpos($col, 'tcinputdesc'))
+                                $col .= '_text';
+                            $commonTranslations[$lang->lang_locale][$col] = $val;
+                        }
+                    }
                 }
             }
+
+            app()->setLocale($currentLocale);
+
+            // Merging texts from steps forms
+            $stepTexts = array_merge_recursive($stepTexts, $commonTranslations);
         }
-
-        app()->setLocale($currentLocale);
-
-        // Merging texts from steps forms
-        $stepTexts = array_merge_recursive($this->config['step2'], $commonTranslations);
 
         $translations = [];
         $textFields = [];
@@ -685,8 +751,8 @@ class ModuleCreator extends Controller
                 $strTranslations .= "\t\t".'\''.$key.'\' => \''.$text.'\','."\n";
             }
 
-            $file = self::fgc('Resources/lang/language-tpl.php');
-            $file = self::sp('#TCTRANSLATIONS', $strTranslations, $file);
+            $file = $this->fgc('Resources/lang/language-tpl.php');
+            $file = $this->sp('#TCTRANSLATIONS', $strTranslations, $file);
 
             $locale = explode('_', $locale)[0];
 
@@ -699,6 +765,12 @@ class ModuleCreator extends Controller
 
     private function setupViews($curDir)
     {
+        if ($this->isBlankTool()) {
+            $file = $this->fgc('Resources/views/blank-index.blade.php');
+            $this->generateModuleFile('index.blade.php', $curDir, $file);
+            return;
+        }
+
         $fileName = 'form.blade.php';
         if (!$this->hasLanguage() && $this->isModalTypeTool())
                 $fileName = 'tab-'. $fileName;
@@ -709,42 +781,54 @@ class ModuleCreator extends Controller
                 $fileName = 'tab-lang-'.$fileName;
         }
 
-        $file = self::fgc('Resources/views/'.$fileName);
+        $file = $this->fgc('Resources/views/'.$fileName);
         $this->generateModuleFile('form.blade.php', $curDir, $file);
 
         $fileName = 'index.blade.php';
         if (!$this->isModalTypeTool())
             $fileName = 'tab-'. $fileName;
 
-        $file = self::fgc('Resources/views/'.$fileName);
+        $file = $this->fgc('Resources/views/'.$fileName);
         $this->generateModuleFile('index.blade.php', $curDir, $file);
     }
 
     private function setupRoutes($curDir)
     {
         $fileName = 'api.php';
-        $file = self::fgc('Routes/'.$fileName);
+        $file = $this->fgc('Routes/'.$fileName);
         $this->generateModuleFile($fileName, $curDir, $file);
+
 
         $fileName = 'web.php';
-        $file = self::fgc('Routes/'.$fileName);
+        if ($this->isBlankTool()) {
 
-        $route = '';
-        if ($this->isDbTool()) {
-            $route = 'Route::get(\'/form/{id?}\', \'IndexController@form\');';
+            $file = $this->fgc('Routes/blank-'.$fileName);
+            $this->generateModuleFile($fileName, $curDir, $file);
+
+        } else {
+
+            $file = $this->fgc('Routes/'.$fileName);
+
+            $route = '';
+            if ($this->isDbTool()) {
+                $route = 'Route::get(\'/form/{id?}\', \'IndexController@form\');';
+            }
+            $file = $this->sp('#TCTOOLTYPE', $route, $file);
+            $this->generateModuleFile($fileName, $curDir, $file);
         }
-        $file = $this->sp('#TCTOOLTYPE', $route, $file);
-        $this->generateModuleFile($fileName, $curDir, $file);
     }
 
     private function setupJs()
     {
+        if ($this->isBlankTool())
+            return;
+
         $fileName = 'tool.js';
         $temp = $fileName;
         if (!$this->isModalTypeTool())
             $temp = 'tab-'.$fileName;
 
-        $file = self::fgc('Resources/assets/js/'.$temp);
+        $file = $this->fgc('Resources/assets/js/'.$temp);
 
         $zendModule = __DIR__ .'/../../../../module/';
         $moduleAssetsDir = $zendModule.DIRECTORY_SEPARATOR.$this->moduleName().DIRECTORY_SEPARATOR.'public/js';
@@ -765,7 +849,7 @@ class ModuleCreator extends Controller
     private function moduleJson()
     {
         $fileName = 'module.json';
-        $file = self::fgc($fileName);
+        $file = $this->fgc($fileName);
         $this->generateModuleFile($fileName, self::MODULE_DIR.$this->moduleName(), $file);
     }
 
@@ -796,15 +880,26 @@ class ModuleCreator extends Controller
         }
     }
 
+    private function generateGitKeep($targetDir)
+    {
+        $targetFile = $targetDir.'/.gitKeep';
+
+        if (!file_exists($targetFile)){
+            $targetFile = fopen($targetFile, 'x+');
+            fwrite($targetFile, '');
+            fclose($targetFile);
+        }
+    }
+
     private function moduleName()
     {
-        return self::makeModuleName($this->config['step1']['tcf-name']);
+        return $this->makeModuleName($this->config['step1']['tcf-name']);
     }
 
     function getMainTablePk()
     {
         $table = $this->config['step3']['tcf-db-table'];
-        return self::getTablePK($table);
+        return $this->getTablePK($table);
     }
 
     function getTablePK($table)
@@ -914,9 +1009,24 @@ class ModuleCreator extends Controller
         return $this->config['step1']['tcf-tool-type'] == 'db' ? true : false;
     }
 
+    private function isBlankTool()
+    {
+        return $this->config['step1']['tcf-tool-type'] == 'blank' ? true : false;
+    }
+
     private function isModalTypeTool()
     {
         return $this->config['step1']['tcf-tool-edit-type'] == 'modal' ? true : false;
+    }
+
+    private function isFrameworkTool()
+    {
+        return $this->config['step1']['tcf-create-framework-tool']  ? true : false;
+    }
+
+    private function isLaravelFrameworkTool()
+    {
+        return $this->config['step1']['tcf-tool-framework'] == 'laravel'  ? true : false;
     }
 
     private function hasLanguage()
