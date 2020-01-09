@@ -12,6 +12,7 @@ return [
     'choose_file' => 'Choose file',
     'properties' => 'Properties',
     'languages' => 'Languages',
+    'texts' => 'Texts',
     'save_item' => 'Save item',
     'add_item_success' => 'Item created successfully',
     'add_failed' => 'Unable to save',

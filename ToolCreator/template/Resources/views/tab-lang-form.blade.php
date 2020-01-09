@@ -21,7 +21,7 @@
             </li>
             <li>
                 <a href="#moduletpl-tool-tab-language-{{ $itemId }}" class="glyphicons font" data-toggle="tab" aria-expanded="true"><i></i>
-                    <span>{{ __('moduletpl::messages.languages') }}</span>
+                    <span>{{ __('moduletpl::messages.texts') }}</span>
                 </a>
             </li>
         </ul>

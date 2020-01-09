@@ -11,7 +11,7 @@ return [
     'common_deactivate',
     'choose_file',
     'properties',
-    'languages',
+    'texts',
     'save_item',
     'add_item_success',
     'add_failed',

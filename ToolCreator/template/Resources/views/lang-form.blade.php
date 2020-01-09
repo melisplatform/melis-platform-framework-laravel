@@ -11,7 +11,7 @@
                         </li>
                         <li>
                             <a href="#moduletpl-tool-modal-language" class="glyphicons font" data-toggle="tab" aria-expanded="true"><i></i>
-                                {{ __('moduletpl::messages.languages') }}
+                                {{ __('moduletpl::messages.texts') }}
                             </a>
                         </li>
                     </ul>
