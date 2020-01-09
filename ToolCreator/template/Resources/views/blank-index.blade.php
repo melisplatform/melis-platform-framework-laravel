@@ -5,7 +5,6 @@
             <p>{{ __('moduletpl::messages.desc') }}</p>
         </div>
         <div class="me-hl col-xs-4 col-sm-4 col-md-4">
-            <button class="btn btn-success pull-right moduletpl-add-update-action">{{ __('moduletpl::messages.common_add') }}</button>
         </div>
     </div>
 </div>

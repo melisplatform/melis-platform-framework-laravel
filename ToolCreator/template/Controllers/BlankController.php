@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Newstooltab\Http\Controllers;
+namespace Modules\ModuleTpl\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
