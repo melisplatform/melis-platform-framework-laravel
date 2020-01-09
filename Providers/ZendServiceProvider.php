@@ -97,6 +97,8 @@ class ZendServiceProvider extends ServiceProvider
                     'database' => $database,
                     'username' => $username,
                     'password' => $password,
+                    'charset' => 'utf8',
+                    'collation' => 'utf8_general_ci',
                 ]
             ]);
         }
