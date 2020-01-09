@@ -774,7 +774,7 @@ class ModuleCreator extends Controller
         $fileName = 'form.blade.php';
         if (!$this->hasLanguage() && !$this->isModalTypeTool())
                 $fileName = 'tab-'. $fileName;
-        else {
+        elseif ($this->hasLanguage()) {
             if ($this->isModalTypeTool())
                 $fileName = 'lang-'.$fileName;
             else
