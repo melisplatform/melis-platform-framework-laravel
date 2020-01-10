@@ -7,7 +7,7 @@
             <h1 class="content-heading">{{  ($itemId) ? __('moduletpl::messages.title'). ' / '.$id : __('moduletpl::messages.common_add')}}</h1>
         </div>
         <div class="me-hl col-xs-4 col-sm-4 col-md-4">
-            <button class="btn btn-success pull-right moduletpl-btn-save-action" data-id="{{ $itemId }}">{{ __('moduletpl::messages.common_save') }}</button>
+            <button class="btn btn-success pull-right moduletpl-btn-save-action" data-id="{{ $itemId }}"><i class="fa fa-save"></i> {{ __('moduletpl::messages.common_save') }}</button>
         </div>
     </div>
 </div>

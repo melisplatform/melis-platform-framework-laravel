@@ -6,7 +6,7 @@
                     <ul class="nav nav-tabs">
                         <li class="active">
                             <a href="#moduletpl-tool-modal-main" class="glyphicons {{ $id ? 'pencil' : 'plus' }}" data-toggle="tab" aria-expanded="true"><i></i>
-                                {{ __('moduletpl::messages.properties') }}
+                                {{ $id ? __('moduletpl::messages.properties') : __('moduletpl::messages.add_item') }}
                             </a>
                         </li>
                         <li>

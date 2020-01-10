@@ -9,6 +9,7 @@ return [
     'common_save',
     'common_activate',
     'common_deactivate',
+    'add_item',
     'choose_file',
     'properties',
     'texts',

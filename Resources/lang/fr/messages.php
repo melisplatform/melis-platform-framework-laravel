@@ -10,6 +10,7 @@ return [
     'common_activate' => 'Actif',
     'common_deactivate' => 'Inactif',
     'choose_file' => 'Choisir un fichier',
+    'add_item' => 'Ajouter élément',
     'properties' => 'Propriétés',
     'languages' => 'Langages',
     'texts' => 'Textes',

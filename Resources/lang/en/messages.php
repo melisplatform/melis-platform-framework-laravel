@@ -9,6 +9,7 @@ return [
     'common_save' => 'Save',
     'common_activate' => 'Active',
     'common_deactivate' => 'Inactive',
+    'add_item' => 'Add item',
     'choose_file' => 'Choose file',
     'properties' => 'Properties',
     'languages' => 'Languages',
