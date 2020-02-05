@@ -21,7 +21,7 @@
   },
   "require": {
     "php": "^7.2",
-    "melisplatform/melis-platform-frameworks": "*",
+    "melisplatform/melis-platform-frameworks": "^3.2",
     "fideloper/proxy": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/tinker": "^1.0",
