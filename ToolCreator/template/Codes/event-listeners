@@ -1,6 +1,0 @@
-        SaveFormEvent::class => [
-            SaveFormRequest::class
-        ],
-        DeleteItemEvent::class => [
-            DeleteItemRequest::class
-        ],

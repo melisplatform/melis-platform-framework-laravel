@@ -1,2 +1,0 @@
-                if ($col == '#TCKEY')
-                    $data[$key][$col] = ZendEvent::sendEvent('melis_tool_column_display_#TCCOLDISPLAY', $row);

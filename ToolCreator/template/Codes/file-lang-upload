@@ -1,4 +1,0 @@
-        if (request()->hasFile('language.'.$form.'.#TCKEY'))
-            $this->update([
-                '#TCKEY' => request('language.'.$form.'.#TCKEY')->store('moduletpl', ZendServiceProvider::ZEND_DISK)
-            ]);

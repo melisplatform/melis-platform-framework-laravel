@@ -1,4 +1,0 @@
-                    'filestyle_options' => [
-                        'buttonBefore' => true,
-                        'buttonText' => __('moduletpl::messages.choose_file'),
-                    ]

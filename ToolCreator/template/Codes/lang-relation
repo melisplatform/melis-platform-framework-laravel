@@ -1,4 +1,0 @@
-    public function languages()
-    {
-        return $this->hasMany(ModelLangName::class, ModelLangName::MAIN_FOREIGN_KEY);
-    }

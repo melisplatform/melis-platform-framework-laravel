@@ -27,8 +27,6 @@ class ZendServiceProvider extends ServiceProvider
         $this->app->singleton('ZendEventManager', function(){
             return $this->zendEventManager;
         });
-
-        $this->app->register(ModuleCreatorServiceProvider::class);
     }
 
     /**

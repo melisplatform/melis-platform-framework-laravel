@@ -19,7 +19,6 @@ class ModuleServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(ZendServiceProvider::class);
-        $this->app->register(ModuleCreatorServiceProvider::class);
 
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('Form', Form::class);

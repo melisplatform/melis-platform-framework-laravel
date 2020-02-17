@@ -1,4 +1,0 @@
-        if (request()->hasFile('#TCKEY'))
-            $this->update([
-                '#TCKEY' => request()->#TCKEY->store('moduletpl', ZendServiceProvider::ZEND_DISK)
-            ]);

@@ -1,4 +1,0 @@
-        foreach ($data As $key => $val)
-            foreach ($val->getOriginal() As $col => $row) {
-#TCTABLECOLS
-            }
