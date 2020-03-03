@@ -1,7 +1,8 @@
 <?php
 
-namespace MelisPlatformFrameworkLaravel;
+namespace MelisPlatformFrameworkLaravel\Providers;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 use Zend\Session\Container;
 
@@ -9,6 +10,8 @@ class ZendServiceProvider extends ServiceProvider
 {
     public $zendServiceManager;
     public $zendEventManager;
+
+    const ZEND_DISK = 'zend_public';
 
     /**
      * Register any application services.
@@ -36,6 +39,7 @@ class ZendServiceProvider extends ServiceProvider
         $this->zendApplication();
         $this->syncDatabaseConnection();
         $this->setLocale();
+        $this->addMelisPublic();
     }
 
     /**
@@ -91,9 +95,25 @@ class ZendServiceProvider extends ServiceProvider
                     'database' => $database,
                     'username' => $username,
                     'password' => $password,
+                    'charset' => 'utf8',
+                    'collation' => 'utf8_general_ci',
                 ]
             ]);
         }
+    }
+
+    /**
+     * Adding custom config for
+     * disk root
+     */
+    public function addMelisPublic()
+    {
+        config([
+            'filesystems.disks.'. self::ZEND_DISK => [
+                'driver' => 'local',
+                'root'   => __DIR__. '/../../../../public/media',
+            ]
+        ]);
     }
 
     /**
@@ -104,5 +124,9 @@ class ZendServiceProvider extends ServiceProvider
     {
         $locale = new Container('meliscore');
         $this->app->setLocale(explode('_', $locale['melis-lang-locale'])[0]);
+
+        // Set current language id to laravel session
+        session(['melis-lang-id' => $locale['melis-lang-id']]);
+
     }
 }

@@ -16,8 +16,8 @@
     "laravel"
   ],
   "extra": {
-    "melis-module": false,
-    "module-name": "MelisPlatformFrameworkLaravel"
+    "module-name": "MelisPlatformFrameworkLaravel",
+    "melis-module": false
   },
   "require": {
     "php": "^7.2",
