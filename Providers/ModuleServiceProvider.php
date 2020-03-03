@@ -18,7 +18,25 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        /**
+         * Zend Service Provider
+         * This provider handle the Zend framworke application
+         * Services and Events
+         */
         $this->app->register(ZendServiceProvider::class);
+        /**
+         * Laravel Modules Service Provider
+         * This provider handle modularity of the application
+         */
+        $this->app->register(\Nwidart\Modules\LaravelModulesServiceProvider::class);
+
+        // Service provider of Melis Platform Framework Tool creator
+        if (class_exists('\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider')) 
+            $this->app->register(\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider::class);
+
+        // Service provider of Melis Platform Framework Demo Tool
+        if (class_exists('\MelisPlatformFrameworkLaravelDemoToolLogic\Providers\ModuleServiceProvider')) 
+            $this->app->register(\MelisPlatformFrameworkLaravelDemoToolLogic\Providers\ModuleServiceProvider::class);
 
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
         $loader->alias('Form', Form::class);
