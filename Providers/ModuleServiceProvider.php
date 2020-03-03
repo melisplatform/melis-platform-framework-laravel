@@ -8,6 +8,7 @@ use MelisPlatformFrameworkLaravel\Helpers\DataTableHelper;
 use Collective\Html\FormFacade As Form;
 use MelisPlatformFrameworkLaravel\Helpers\FieldRowHelper;
 use MelisPlatformFrameworkLaravel\Helpers\ZendEvent;
+use Collective\Html\HtmlServiceProvider;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,11 @@ class ModuleServiceProvider extends ServiceProvider
          * This provider handle modularity of the application
          */
         $this->app->register(\Nwidart\Modules\LaravelModulesServiceProvider::class);
+        /**
+         * Html Service Provider
+         * This provider handle Form and elements
+         */
+        $this->app->register(HtmlServiceProvider::class);
 
         // Service provider of Melis Platform Framework Tool creator
         if (class_exists('\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider')) 
