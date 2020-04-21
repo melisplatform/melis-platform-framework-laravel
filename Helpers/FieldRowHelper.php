@@ -18,7 +18,7 @@ class FieldRowHelper
             $options = (!empty($opts['options'])) ? $opts['options'] : [];
             $attributes = (!empty($opts['attributes'])) ? $opts['attributes'] : [];
 
-            $srv = app('ZendServiceManager')->get('FormElementManager');
+            $srv = app('LaminasServiceManager')->get('FormElementManager');
 
             $finalOptions = [];
 
@@ -48,7 +48,7 @@ class FieldRowHelper
             if (isset($data->$name))
                 $element->setValue($data->$name);
 
-            $viewHelper = app('ZendServiceManager')->get('ViewHelperManager');
+            $viewHelper = app('LaminasServiceManager')->get('ViewHelperManager');
             $fieldRow = $viewHelper->get('MelisFieldRow');
 
             $fieldSet .= $fieldRow->render($element).PHP_EOL;

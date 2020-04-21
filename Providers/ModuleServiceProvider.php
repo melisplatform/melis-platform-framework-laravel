@@ -7,7 +7,6 @@ use Collective\Html\HtmlFacade;
 use MelisPlatformFrameworkLaravel\Helpers\DataTableHelper;
 use Collective\Html\FormFacade As Form;
 use MelisPlatformFrameworkLaravel\Helpers\FieldRowHelper;
-use MelisPlatformFrameworkLaravel\Helpers\ZendEvent;
 use Collective\Html\HtmlServiceProvider;
 
 class ModuleServiceProvider extends ServiceProvider
@@ -20,11 +19,11 @@ class ModuleServiceProvider extends ServiceProvider
     public function register()
     {
         /**
-         * Zend Service Provider
-         * This provider handle the Zend framworke application
+         * Laminas Service Provider
+         * This provider handle the Laminas framework application
          * Services and Events
          */
-        $this->app->register(ZendServiceProvider::class);
+        $this->app->register(LaminasServiceProvider::class);
         /**
          * Laravel Modules Service Provider
          * This provider handle modularity of the application
@@ -85,5 +84,4 @@ class ModuleServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'melisLaravel');
     }
-
 }
