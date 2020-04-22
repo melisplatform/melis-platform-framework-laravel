@@ -19,6 +19,14 @@ class LaminasServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        /**
+         * Laminas not executed when using Artisan cli
+         * this because artisan access diredtly to Laravel
+         * and by passing the Laminas application
+         */
+        if (!$this->app->has('LaminasServiceManager'))
+            return;
+
         $this->syncDatabaseConnection();
         $this->setLocale();
         $this->addMelisPublic();
