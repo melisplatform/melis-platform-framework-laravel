@@ -2,7 +2,7 @@
 
 namespace MelisPlatformFrameworkLaravel\Helpers;
 
-class LaravelEvent
+class LaminasEvent
 {
     static public function sendEvent($eventCode, $data = null)
     {
