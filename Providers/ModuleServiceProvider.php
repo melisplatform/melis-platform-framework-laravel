@@ -23,7 +23,7 @@ class ModuleServiceProvider extends ServiceProvider
          * This provider handle the Laminas framework application
          * Services and Events
          */
-        $this->app->register(LaminasServiceProvider::class);
+        $this->app->register(\MelisPlatformFrameworkLaravel\Providers\LaminasServiceProvider::class);
         /**
          * Laravel Modules Service Provider
          * This provider handle modularity of the application
@@ -36,11 +36,11 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->register(HtmlServiceProvider::class);
 
         // Service provider of Melis Platform Framework Tool creator
-        if (class_exists('\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider')) 
+        if (class_exists(\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider::class))
             $this->app->register(\MelisPlatformFrameworkLaravelToolCreator\Providers\ModuleServiceProvider::class);
 
         // Service provider of Melis Platform Framework Demo Tool
-        if (class_exists('\MelisPlatformFrameworkLaravelDemoToolLogic\Providers\ModuleServiceProvider')) 
+        if (class_exists(\MelisPlatformFrameworkLaravelDemoToolLogic\Providers\ModuleServiceProvider::class))
             $this->app->register(\MelisPlatformFrameworkLaravelDemoToolLogic\Providers\ModuleServiceProvider::class);
 
         $loader = \Illuminate\Foundation\AliasLoader::getInstance();
