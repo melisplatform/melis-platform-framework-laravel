@@ -1,55 +1,54 @@
 {
-    "name": "melisplatform/melis-platform-framework-laravel",
-    "description": "Melis Platform Frameworks Laravel",
-    "type": "melisplatform-module",
-    "license": "OSL-3.0",
-    "homepage": "https://github.com/melisplatform/melis-platform-framework-laravel",
-    "support": {
-        "source": "https://github.com/melisplatform/melis-platform-framework-laravel",
-        "issues": "https://github.com/melisplatform/melis-platform-framework-laravel/issues"
-    },
-    "keywords": [
-        "cms",
-        "melis",
-        "zf2",
-        "module",
-        "laravel"
-    ],
-    "extra": {
-        "module-name": "MelisPlatformFrameworkLaravel",
-        "melis-module": false
-    },
-    "require": {
-        "php": "^7.2",
-        "melisplatform/melis-platform-frameworks": "*",
-        "fideloper/proxy": "^4.0",
-        "laravel/framework": "^6.0",
-        "laravel/tinker": "^1.0",
-        "laravelcollective/html": "^6.0",
-        "nwidart/laravel-modules": "^6.2",
-        "laminas/laminas-dependency-plugin": "^1.0"
-    },
-    "require-dev": {
-        "filp/whoops": "^2.0",
-        "fzaninotto/faker": "^1.4",
-        "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": [
-                "../../../thirdparty/Laravel/app"
-            ],
-            "Modules\\": [
-                "../../../thirdparty/Laravel/Modules"
-            ],
-            "MelisPlatformFrameworkLaravel\\": "/"
-        }
+  "name": "melisplatform/melis-platform-framework-laravel",
+  "description": "Melis Platform Frameworks Laravel",
+  "type": "melisplatform-module",
+  "license": "OSL-3.0",
+  "homepage": "https://github.com/melisplatform/melis-platform-framework-laravel",
+  "support": {
+    "source": "https://github.com/melisplatform/melis-platform-framework-laravel",
+    "issues": "https://github.com/melisplatform/melis-platform-framework-laravel/issues"
+  },
+  "keywords": [
+    "cms",
+    "melis",
+    "zf2",
+    "module",
+    "laravel"
+  ],
+  "extra": {
+    "module-name": "MelisPlatformFrameworkLaravel",
+    "melis-module": false
+  },
+  "require": {
+    "php": "^7.2",
+    "melisplatform/melis-platform-frameworks": "*",
+    "fideloper/proxy": "^4.0",
+    "laravel/framework": "^6.0",
+    "laravel/tinker": "^1.0",
+    "laravelcollective/html": "^6.0",
+    "nwidart/laravel-modules": "^6.2"
+  },
+  "require-dev": {
+    "filp/whoops": "^2.0",
+    "fzaninotto/faker": "^1.4",
+    "mockery/mockery": "^1.0",
+    "nunomaduro/collision": "^3.0",
+    "phpunit/phpunit": "^8.0"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": [
+        "../../../thirdparty/Laravel/app"
+      ],
+      "Modules\\": [
+        "../../../thirdparty/Laravel/Modules"
+      ],
+      "MelisPlatformFrameworkLaravel\\": "/"
     }
+  }
 }
