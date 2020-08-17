@@ -10,7 +10,7 @@ class DataTableHelper
          * Melis View helper generating the html table structure to be
          * initialize with Data Table
          */
-        $dataTableHelper = app('ZendServiceManager')->get('ViewHelperManager')->get('MelisDataTable');
+        $dataTableHelper = app('LaminasServiceManager')->get('ViewHelperManager')->get('MelisDataTable');
 
         return $dataTableHelper->createTable($tableConfig);
     }

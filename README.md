@@ -1,6 +1,6 @@
 # melis-platform-framework-laravel
 
-This laravel service provides a connection to the Zend application enabling 
+This laravel service provides a connection to the Laminas application enabling 
 access to the Service and Event Manager and Database connection configuration of the 
 application.
 
@@ -20,14 +20,14 @@ composer require melisplatform/melis-platform-framework-laravel
 Activating the Service provider by just adding to the ``config/app.php`` file in the 
 Service Providers section.
 ```
-MelisPlatformFrameworkLaravel\ZendServiceProvider::class
+MelisPlatformFrameworkLaravel\LaminasServiceProvider::class
 ```
 
 ### Usage
 Below is an example of direct calling a Model in laravel controller
 
 ```
-$languagesTbl = app('ZendServiceManager')->get('MelisCoreTableLang');
+$languagesTbl = app('LaminasServiceManager')->get('MelisCoreTableLang');
 $listArray = $languagesTbl->fetchAll();
 ```
 
