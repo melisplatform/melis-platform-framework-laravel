@@ -26,14 +26,18 @@
 		"laravel/framework": "^8.83",
 		"laravel/tinker": "^2.7",
 		"laravelcollective/html": "^6.3",
-		"nwidart/laravel-modules": "^8.0"
+		"nwidart/laravel-modules": "^8.0",
+		"fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "laravel/sanctum": "^2.11"
 	},
 	"require-dev": {
 		"filp/whoops": "^2.0",
-		"fzaninotto/faker": "^1.4",
-		"mockery/mockery": "^1.0",
-		"nunomaduro/collision": "^3.0",
-		"phpunit/phpunit": "^8.0"
+		"fakerphp/faker": "^1.9.1",
+		"laravel/sail": "^1.0.1",
+		"mockery/mockery": "^1.4.4",
+		"nunomaduro/collision": "^5.10",
+		"phpunit/phpunit": "^9.5.10"
 	},
 	"config": {
 		"optimize-autoloader": true,
