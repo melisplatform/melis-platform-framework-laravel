@@ -20,13 +20,13 @@
 		"melis-module": false
 	},
 	"require": {
-		"php": "^7.1.3|^7.2|^7.3",
+		"php": "^7.3|^8.0",
 		"melisplatform/melis-platform-frameworks": "*",
 		"fideloper/proxy": "^4.0",
-		"laravel/framework": "^6.0",
-		"laravel/tinker": "^1.0",
-		"laravelcollective/html": "^6.0",
-		"nwidart/laravel-modules": "^6.2"
+		"laravel/framework": "^8.83",
+		"laravel/tinker": "^2.7",
+		"laravelcollective/html": "^6.3",
+		"nwidart/laravel-modules": "^8.0"
 	},
 	"require-dev": {
 		"filp/whoops": "^2.0",
