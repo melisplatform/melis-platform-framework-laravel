@@ -21,7 +21,7 @@
 	},
 	"require": {
 		"php": "^7.3|^8.0",
-		"melisplatform/melis-platform-frameworks": "dev-update/php-8-upgrade as 4.0",
+		"melisplatform/melis-platform-frameworks": "^5.0",
 		"fideloper/proxy": "^4.0",
 		"laravel/framework": "^8.83",
 		"laravel/tinker": "^2.7",
