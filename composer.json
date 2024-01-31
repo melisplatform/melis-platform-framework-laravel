@@ -23,10 +23,11 @@
 		"php": "^8.1|^8.3",
 		"melisplatform/melis-platform-frameworks": "*",
 		"fideloper/proxy": "^4.4",
-		"laravel/framework": "^10.42",
+		"laravel/framework": "^9.52",
 		"laravel/tinker": "^2.9",
 		"spatie/laravel-html": "^3.4",
 		"nwidart/laravel-modules": "^10.0",
+		"fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/sanctum": "^3.3"
 	},
