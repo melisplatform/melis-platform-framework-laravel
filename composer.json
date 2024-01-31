@@ -25,18 +25,19 @@
 		"fideloper/proxy": "^4.4",
 		"laravel/framework": "^9.52",
 		"laravel/tinker": "^2.9",
-		"spatie/laravel-html": "^3.4",
+		"laravelcollective/html":"^6.4",
 		"nwidart/laravel-modules": "^10.0",
 		"fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
-        "laravel/sanctum": "^3.3"
+        "laravel/sanctum": "^3.3",
+		"nunomaduro/collision": "^7.10",
+		"spatie/laravel-ignition": "^1.0",
+		"laravel/sail": "^1.27"
 	},
 	"require-dev": {
 		"filp/whoops": "^2.15",
 		"fakerphp/faker": "^1.23",
-		"laravel/sail": "^1.27",
 		"mockery/mockery": "^1.6",
-		"nunomaduro/collision": "^7.10",
 		"phpunit/phpunit": "^10.5"
 	},
 	"config": {
