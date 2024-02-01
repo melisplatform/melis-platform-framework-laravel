@@ -26,7 +26,7 @@
 		"laravel/framework": "^9.52",
 		"laravel/tinker": "^2.9",
 		"laravelcollective/html":"^6.4",
-		"nwidart/laravel-modules": "^10.0",
+		"nwidart/laravel-modules": "^9.0",
 		"fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/sanctum": "^3.3",
